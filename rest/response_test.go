@@ -1,8 +1,7 @@
-package response_test
+package rest_test
 
 import (
 	"errors"
-	"github.com/edermanoel94/cale/rest/response"
 	"github.com/gobuffalo/httptest"
 	"io/ioutil"
 	"net/http"
@@ -17,7 +16,7 @@ func TestResponse_Json(t *testing.T) {
 
 	actualStatusCode := http.StatusOK
 
-	_, _ = response.Json(recorder, actualBody, actualStatusCode)
+	_, _ = Json(recorder, actualBody, actualStatusCode)
 
 	result := recorder.Result()
 
@@ -53,7 +52,7 @@ func TestJsonWithError(t *testing.T) {
 
 		actualStatusCode := http.StatusNotFound
 
-		_, _ = response.JsonWithError(recorder, actualError, actualStatusCode)
+		_, _ = JsonWithError(recorder, actualError, actualStatusCode)
 
 		result := recorder.Result()
 
@@ -77,7 +76,7 @@ func TestJsonWithError(t *testing.T) {
 
 		actualStatusCode := http.StatusNotFound
 
-		_, _ = response.JsonWithError(recorder, actualError, actualStatusCode)
+		_, _ = JsonWithError(recorder, actualError, actualStatusCode)
 
 		result := recorder.Result()
 
@@ -103,7 +102,7 @@ func TestJsonWithRedirect(t *testing.T) {
 	actualStatusCode := http.StatusOK
 	actualRedirect := "http://localhost:8080"
 
-	_, _ = response.JsonWithRedirect(recorder, actualBody, actualRedirect, actualStatusCode)
+	_, _ = JsonWithRedirect(recorder, actualBody, actualRedirect, actualStatusCode)
 
 	result := recorder.Result()
 

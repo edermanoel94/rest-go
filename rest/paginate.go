@@ -1,4 +1,4 @@
-package request
+package rest
 
 import (
 	"net/url"
@@ -42,8 +42,4 @@ func paginate(values url.Values) (*PageRequest, error) {
 	}
 
 	return pageRequest, nil
-}
-
-func (p PageRequest) Sort(fields []string) {
-
 }
