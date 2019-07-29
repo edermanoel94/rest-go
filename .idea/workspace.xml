@@ -1,55 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e4289e78-f081-4ad3-943a-a8d8a34a96da" name="Default Changelist" comment="" />
-    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <list default="true" id="57b1b652-b746-4f74-8162-d7a0c11cede2" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="FileTemplateManagerImpl">
-    <option name="RECENT_TEMPLATES">
-      <list>
-        <option value="Go File" />
-      </list>
-    </option>
-  </component>
-  <component name="GOROOT" path="/snap/go/4098" />
-  <component name="ProjectFrameBounds" extendedState="6" fullScreen="true">
-    <option name="x" value="240" />
-    <option name="y" value="158" />
-    <option name="width" value="1440" />
-    <option name="height" value="791" />
-  </component>
-  <component name="ProjectId" id="1OcYCTZWhlobmRqBC5Sc9P3DQq2" />
-  <component name="PropertiesComponent">
-    <property name="DefaultGoTemplateProperty" value="Go File" />
-    <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="configurable.Global.GOPATH.is.expanded" value="true" />
-    <property name="configurable.Project.GOPATH.is.expanded" value="true" />
-    <property name="go.gopath.indexing.explicitly.defined" value="true" />
-    <property name="go.import.settings.migrated" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/i18n" />
-    <property name="node.js.detected.package.eslint" value="true" />
-    <property name="node.js.detected.package.tslint" value="true" />
-    <property name="node.js.path.for.package.eslint" value="project" />
-    <property name="node.js.path.for.package.tslint" value="project" />
-    <property name="node.js.selected.package.eslint" value="(autodetect)" />
-    <property name="node.js.selected.package.tslint" value="(autodetect)" />
-    <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
-    <property name="nodejs_npm_path_reset_for_default_project" value="true" />
-    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
-  </component>
-  <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/i18n" />
-    </key>
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/rest/response" />
-      <recent name="$PROJECT_DIR$/rest" />
-    </key>
-  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="RunDashboard">
     <option name="ruleStates">
       <list>
@@ -62,73 +20,8 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Go Test.TestJsonWithRedirectj in github.com/edermanoel94/cale/rest/response">
-    <configuration name="BenchmarkResponse_Json in github.com/edermanoel94/cale/rest/response" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
-      <module name="cale" />
-      <working_directory value="$PROJECT_DIR$/rest/response" />
-      <framework value="gobench" />
-      <kind value="PACKAGE" />
-      <package value="github.com/edermanoel94/cale/rest/response" />
-      <directory value="$PROJECT_DIR$/" />
-      <filePath value="$PROJECT_DIR$/" />
-      <pattern value="^BenchmarkResponse_Json$" />
-      <method v="2" />
-    </configuration>
-    <configuration name="TestJsonWithError in github.com/edermanoel94/cale/rest/response" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
-      <module name="cale" />
-      <working_directory value="$PROJECT_DIR$/rest/response" />
-      <framework value="gotest" />
-      <kind value="PACKAGE" />
-      <package value="github.com/edermanoel94/cale/rest/response" />
-      <directory value="$PROJECT_DIR$/" />
-      <filePath value="$PROJECT_DIR$/" />
-      <pattern value="^TestJsonWithError$" />
-      <method v="2" />
-    </configuration>
-    <configuration name="TestJsonWithRedirectj in github.com/edermanoel94/cale/rest/response" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
-      <module name="cale" />
-      <working_directory value="$PROJECT_DIR$/rest/response" />
-      <framework value="gotest" />
-      <kind value="PACKAGE" />
-      <package value="github.com/edermanoel94/cale/rest/response" />
-      <directory value="$PROJECT_DIR$/" />
-      <filePath value="$PROJECT_DIR$/" />
-      <pattern value="^TestJsonWithRedirectj$" />
-      <method v="2" />
-    </configuration>
-    <configuration name="TestResponse_Json in github.com/edermanoel94/cale/rest/response" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
-      <module name="cale" />
-      <working_directory value="$PROJECT_DIR$/rest/response" />
-      <framework value="gotest" />
-      <kind value="PACKAGE" />
-      <package value="github.com/edermanoel94/cale/rest/response" />
-      <directory value="$PROJECT_DIR$/" />
-      <filePath value="$PROJECT_DIR$/" />
-      <pattern value="^TestResponse_Json$" />
-      <method v="2" />
-    </configuration>
-    <configuration name="TestResponse_JsonWithRedirect in github.com/edermanoel94/cale/rest/response" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
-      <module name="cale" />
-      <working_directory value="$PROJECT_DIR$/rest/response" />
-      <framework value="gotest" />
-      <kind value="PACKAGE" />
-      <package value="github.com/edermanoel94/cale/rest/response" />
-      <directory value="$PROJECT_DIR$/" />
-      <filePath value="$PROJECT_DIR$/" />
-      <pattern value="^TestResponse_JsonWithRedirect$" />
-      <method v="2" />
-    </configuration>
-    <recent_temporary>
-      <list>
-        <item itemvalue="Go Test.TestJsonWithRedirectj in github.com/edermanoel94/cale/rest/response" />
-        <item itemvalue="Go Test.TestJsonWithError in github.com/edermanoel94/cale/rest/response" />
-        <item itemvalue="Go Test.TestResponse_Json in github.com/edermanoel94/cale/rest/response" />
-        <item itemvalue="Go Test.TestResponse_JsonWithRedirect in github.com/edermanoel94/cale/rest/response" />
-        <item itemvalue="Go Test.BenchmarkResponse_Json in github.com/edermanoel94/cale/rest/response" />
-      </list>
-    </recent_temporary>
-  </component>
-  <component name="TypeScriptGeneratedFilesManager">
-    <option name="version" value="1" />
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Organizando os pacotes" />
+    <option name="LAST_COMMIT_MESSAGE" value="Organizando os pacotes" />
   </component>
 </project>
