@@ -1,11 +1,11 @@
-Cale - Helpful library  for Rest API
+Rest GO - Helpful library  for Rest API
 ================================
 
 Go code (golang) set of packages that provide many tools for working with rest api.
 
 Get started:
 
-  * Install cale with [one line of code](#installation), or [update it with another](#staying-up-to-date)
+  * Install Rest GO with [one line of code](#installation), or [update it with another](#staying-up-to-date)
 
 
 
@@ -47,7 +47,7 @@ Installation
 
 To install, use `go get`:
 
-    go get github.com/edermanoel94/cale
+    go get github.com/edermanoel94/rest-go
 
 
 Contributing
