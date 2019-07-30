@@ -1,7 +1,9 @@
 package rest_test
 
 import (
+	"encoding/json"
 	"errors"
+	"github.com/edermanoel94/cale/rest"
 	"github.com/gobuffalo/httptest"
 	"io/ioutil"
 	"net/http"
@@ -12,21 +14,21 @@ func TestResponse_Json(t *testing.T) {
 
 	recorder := httptest.NewRecorder()
 
-	actualBody := []byte("oi")
+	actualBody := []byte("{\"name\": \"cale\"}")
 
 	actualStatusCode := http.StatusOK
 
-	_, _ = Json(recorder, actualBody, actualStatusCode)
+	_, _ = rest.Json(recorder, actualBody, actualStatusCode)
 
 	result := recorder.Result()
+
+	defer result.Body.Close()
 
 	bytes, err := ioutil.ReadAll(result.Body)
 
 	if err != nil {
 		t.Fatalf("cannot read recorder: %v", err)
 	}
-
-	defer result.Body.Close()
 
 	if len(actualBody) != len(bytes) {
 		t.Fatalf("size of slice of bytes is different")
@@ -45,16 +47,18 @@ func TestResponse_Json(t *testing.T) {
 
 func TestJsonWithError(t *testing.T) {
 
-	t.Run("should respond with json", func(t *testing.T) {
-		recorder := httptest.NewRecorder()
+	t.Run("should send a signal error", func(t *testing.T) {
 
 		actualError := errors.New("error")
-
 		actualStatusCode := http.StatusNotFound
 
-		_, _ = JsonWithError(recorder, actualError, actualStatusCode)
+		recorder := httptest.NewRecorder()
+
+		_, _ = rest.JsonWithError(recorder, actualError, actualStatusCode)
 
 		result := recorder.Result()
+
+		defer result.Body.Close()
 
 		bytes, err := ioutil.ReadAll(result.Body)
 
@@ -62,34 +66,16 @@ func TestJsonWithError(t *testing.T) {
 			t.Fatalf("cannot read recorder: %v", err)
 		}
 
-		defer result.Body.Close()
+		content := map[string]string{}
 
-		if actualError.Error() == string(bytes) {
-			t.Fatalf("")
-		}
-	})
-
-	t.Run("should not respond", func(t *testing.T) {
-		recorder := httptest.NewRecorder()
-
-		actualError := errors.New("error")
-
-		actualStatusCode := http.StatusNotFound
-
-		_, _ = JsonWithError(recorder, actualError, actualStatusCode)
-
-		result := recorder.Result()
-
-		bytes, err := ioutil.ReadAll(result.Body)
+		err = json.Unmarshal(bytes, &content)
 
 		if err != nil {
-			t.Fatalf("cannot read recorder: %v", err)
+			t.Fatalf("couldn't unmarshal: %v", err)
 		}
 
-		defer result.Body.Close()
-
-		if actualError.Error() == string(bytes) {
-			t.Fatalf("")
+		if actualError.Error() != content["message"] {
+			t.Fatalf("expected: %s, got: %s", actualError.Error(), content["message"])
 		}
 	})
 }
@@ -98,13 +84,15 @@ func TestJsonWithRedirect(t *testing.T) {
 
 	recorder := httptest.NewRecorder()
 
-	actualBody := []byte("oi")
+	actualBody := []byte("{\"name\": \"cale\"}")
 	actualStatusCode := http.StatusOK
-	actualRedirect := "http://localhost:8080"
+	actualRedirect := "http://localhost:8080/tenant/LASA"
 
-	_, _ = JsonWithRedirect(recorder, actualBody, actualRedirect, actualStatusCode)
+	_, _ = rest.JsonWithRedirect(recorder, actualBody, actualRedirect, actualStatusCode)
 
 	result := recorder.Result()
+
+	defer result.Body.Close()
 
 	_, err := ioutil.ReadAll(result.Body)
 
@@ -112,11 +100,11 @@ func TestJsonWithRedirect(t *testing.T) {
 		t.Fatalf("cannot read recorder: %v", err)
 	}
 
-	defer result.Body.Close()
-
 	location := "Location"
 
-	if result.Header.Get(location) != actualRedirect {
-		t.Fatalf("should be application/json, got: %s", result.Header.Get(location))
+	headerLocation := result.Header.Get(location)
+
+	if actualRedirect != headerLocation {
+		t.Fatalf("expected a redirect to %s, got: %s", headerLocation, headerLocation)
 	}
 }

@@ -1,20 +1,17 @@
 package rest
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 )
 
-/* HEADERS KEY */
-
+// Headers keys
 const (
 	contentType = "Content-Type"
 	location    = "Location"
 )
 
-/* HEADERS VALUE */
-
+// Headers values
 const (
 	applicationJson = "application/json"
 )
@@ -26,7 +23,7 @@ func Json(w http.ResponseWriter, body []byte, code int) (int, error) {
 
 func JsonWithError(w http.ResponseWriter, err error, code int) (int, error) {
 	if err == nil {
-		return 0, errors.New("err cannot be nil")
+		return 0, fmt.Errorf("error cannot be null")
 	}
 	bytes := formatMessageError(err.Error())
 	return Json(w, bytes, code)
@@ -37,6 +34,7 @@ func JsonWithRedirect(w http.ResponseWriter, body []byte, redirect string, code 
 	return Json(w, body, code)
 }
 
+// TODO: Customize
 func formatMessageError(message string) []byte {
 	return []byte(fmt.Sprintf("{\"message\": \"%s\"}", message))
 }
