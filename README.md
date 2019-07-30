@@ -16,7 +16,8 @@ func SomeHandler(w http.ResponseWriter, r *http.Request) {
     
     if err != nil {
     	w.WriteHeader(http.StatusInternalServerError)
-    	_, _ = w.Write([]byte(err.Error()))
+        message := fmt.Sprintf("{\"message\": \"%s\"}", err.Error())
+    	_, _ = w.Write([]byte(message))
 	return
     }
     
