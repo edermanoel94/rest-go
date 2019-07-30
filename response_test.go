@@ -3,7 +3,6 @@ package rest_test
 import (
 	"encoding/json"
 	"errors"
-	"github.com/edermanoel94/cale/rest"
 	"github.com/gobuffalo/httptest"
 	"io/ioutil"
 	"net/http"
@@ -18,7 +17,7 @@ func TestResponse_Json(t *testing.T) {
 
 	actualStatusCode := http.StatusOK
 
-	_, _ = rest.Json(recorder, actualBody, actualStatusCode)
+	_, _ = Json(recorder, actualBody, actualStatusCode)
 
 	result := recorder.Result()
 
@@ -54,7 +53,7 @@ func TestJsonWithError(t *testing.T) {
 
 		recorder := httptest.NewRecorder()
 
-		_, _ = rest.JsonWithError(recorder, actualError, actualStatusCode)
+		_, _ = JsonWithError(recorder, actualError, actualStatusCode)
 
 		result := recorder.Result()
 
@@ -88,7 +87,7 @@ func TestJsonWithRedirect(t *testing.T) {
 	actualStatusCode := http.StatusOK
 	actualRedirect := "http://localhost:8080/tenant/LASA"
 
-	_, _ = rest.JsonWithRedirect(recorder, actualBody, actualRedirect, actualStatusCode)
+	_, _ = JsonWithRedirect(recorder, actualBody, actualRedirect, actualStatusCode)
 
 	result := recorder.Result()
 
