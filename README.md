@@ -18,7 +18,7 @@ func SomeHandler(w http.ResponseWriter, r *http.Request) {
     	w.WriteHeader(http.StatusInternalServerError)
         message := fmt.Sprintf("{\"message\": \"%s\"}", err.Error())
     	_, _ = w.Write([]byte(message))
-	return
+	    return
     }
     
     w.WriteHeader(http.StatusOk)
@@ -63,6 +63,7 @@ func SomeHandler(w http.ResponseWriter, r *http.Request) {
     if err != nil {
         // JsonWithError let u write a custom error message on json formatted
         _, _ = rest.JsonWithError(w, err, http.StatusInternalServerError)
+        return
     }
 
     // Json use if u want customize your json.Marshal in someway
