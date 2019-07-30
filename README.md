@@ -9,7 +9,7 @@ Get started:
 
 
 
-[`rest`](http://godoc.org/github.com/edermanoel94/cale/rest "API documentation") package
+[`rest`](http://godoc.org/github.com/edermanoel94/rest-go "API documentation") package
 -------------------------------------------------------------------------------------------
 
 The `rest` package provides some helpful methods that allow you to write better rest api in GO.
@@ -23,7 +23,7 @@ package yours
 
 import (
     "encoding/json"
-    "github.com/edermanoel94/cale/rest"
+    "github.com/edermanoel94/rest-go"
     "net/http"
 )
 
