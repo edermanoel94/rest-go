@@ -11,6 +11,13 @@ func SomeHandler(w http.ResponseWriter, r *http.Request) {
 
     product := &product{"Smart TV", 50.00}
     bytes, err := json.Marshal(product)
+    
+    if err != nil {
+    	w.Header().Add("Content-Type", "application/json")
+    	w.WriteHeader(http.StatusInternalServerError)
+    	_, _ = w.Write([]byte(err.Error()))
+	return
+    }
 
     w.Header().Add("Content-Type", "application/json")
     w.WriteHeader(http.StatusOk)
