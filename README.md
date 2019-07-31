@@ -9,10 +9,11 @@ And if u are tired of written, this:
 
 func SomeHandler(w http.ResponseWriter, r *http.Request) {
 
-    product := &product{"Smart TV", 50.00}
-    bytes, err := json.Marshal(product)
-    
     w.Header().Add("Content-Type", "application/json")
+
+    product := &product{"Smart TV", 50.00}
+    
+    bytes, err := json.Marshal(product)
     
     if err != nil {
     	w.WriteHeader(http.StatusInternalServerError)
