@@ -27,7 +27,7 @@ func CheckPathVariables(params map[string]string, pathVariables ...string) error
 	return nil
 }
 
-// GetBodyRequest get the content body of request and unmarshal to a struct
+// GetBodyRequest get the content body of request and unmarshal a reference to a struct
 func GetBodyRequest(r *http.Request, result interface{}) error {
 
 	bytes, err := ioutil.ReadAll(r.Body)
