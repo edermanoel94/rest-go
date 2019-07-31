@@ -92,7 +92,7 @@ func SomeHandler(w http.ResponseWriter, r *http.Request) {
 	
     product := &product{"Smart TV", 50.00}
 
-    // JsonMarshalled make ur data to a bytes and still return a err in json.Marshal, be careful on this
+    // JsonMarshalled marshall the struct for u and respond json.
     _, _ := rest.JsonMarshalled(w, product, http.StatusOK)
 }
 ```
