@@ -1,7 +1,10 @@
 package rest
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"net/http"
 	"strings"
 )
 
@@ -18,7 +21,26 @@ func CheckPathVariables(params map[string]string, pathVariables ...string) error
 	}
 
 	if len(fields) > 0 {
-		return fmt.Errorf("params %s dont exists", strings.Join(fields, ", "))
+		return fmt.Errorf("params %s dont exists in the context", strings.Join(fields, ", "))
+	}
+
+	return nil
+}
+
+func GetBodyRequest(r *http.Request, result interface{}) error {
+
+	bytes, err := ioutil.ReadAll(r.Body)
+
+	defer r.Body.Close()
+
+	if err != nil {
+		return fmt.Errorf("couldn't read body of request: %v", err)
+	}
+
+	err = json.Unmarshal(bytes, result)
+
+	if err != nil {
+		return fmt.Errorf("couldn't unmarshal: %v", err)
 	}
 
 	return nil

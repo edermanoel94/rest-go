@@ -91,8 +91,12 @@ func SomeHandler(w http.ResponseWriter, r *http.Request) {
 	
     product := &product{"Smart TV", 50.00}
 
-    // JsonMarshalled use without boilerplate
-    _, _ = rest.JsonMarshalled(w, product, http.StatusOK)
+    // JsonMarshalled make ur data to a bytes and still return a err in json.Marshal, be careful on this
+    _, err := rest.JsonMarshalled(w, product, http.StatusOK)
+
+    if err != nil {
+        _, _ = rest.JsonWithError(w, err, http.StatusInternalServerError)
+    }
 }
 ```
 
