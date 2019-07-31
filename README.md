@@ -1,7 +1,7 @@
 Rest GO - Helpful library  for Rest API
 ================================
 
-Go code (golang) a package that provide many tools for working with rest api.
+A package that provide many helpful methods for working with rest api.
 
 And if u are tired of written, this:
 
