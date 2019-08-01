@@ -1,11 +1,16 @@
+//+build unit
+
 package rest_test
 
 import (
 	"encoding/json"
 	"errors"
-	"github.com/gobuffalo/httptest"
+	"github.com/edermanoel94/rest-go"
+	"io"
 	"io/ioutil"
 	"net/http"
+	"net/http/httptest"
+	"os"
 	"testing"
 )
 
@@ -13,11 +18,11 @@ func TestResponse_Json(t *testing.T) {
 
 	recorder := httptest.NewRecorder()
 
-	actualBody := []byte("{\"name\": \"cale\"}")
+	body := []byte("{\"name\": \"cale\"}")
 
-	actualStatusCode := http.StatusOK
+	statusCode := http.StatusOK
 
-	_, _ = Json(recorder, actualBody, actualStatusCode)
+	_, _ = rest.Json(recorder, body, statusCode)
 
 	result := recorder.Result()
 
@@ -29,12 +34,12 @@ func TestResponse_Json(t *testing.T) {
 		t.Fatalf("cannot read recorder: %v", err)
 	}
 
-	if len(actualBody) != len(bytes) {
+	if len(body) != len(bytes) {
 		t.Fatalf("size of slice of bytes is different")
 	}
 
-	if actualStatusCode != result.StatusCode {
-		t.Fatalf("got status %d, but given %d", actualStatusCode, result.StatusCode)
+	if statusCode != result.StatusCode {
+		t.Fatalf("got status %d, but given %d", statusCode, result.StatusCode)
 	}
 
 	contentType := "Content-Type"
@@ -48,12 +53,12 @@ func TestJsonWithError(t *testing.T) {
 
 	t.Run("should send a signal error", func(t *testing.T) {
 
-		actualError := errors.New("error")
-		actualStatusCode := http.StatusNotFound
+		errorThrowed := errors.New("error")
+		statusCode := http.StatusNotFound
 
 		recorder := httptest.NewRecorder()
 
-		_, _ = JsonWithError(recorder, actualError, actualStatusCode)
+		_, _ = rest.JsonWithError(recorder, errorThrowed, statusCode)
 
 		result := recorder.Result()
 
@@ -73,8 +78,8 @@ func TestJsonWithError(t *testing.T) {
 			t.Fatalf("couldn't unmarshal: %v", err)
 		}
 
-		if actualError.Error() != content["message"] {
-			t.Fatalf("expected: %s, got: %s", actualError.Error(), content["message"])
+		if errorThrowed.Error() != content["message"] {
+			t.Fatalf("expected: %s, got: %s", errorThrowed.Error(), content["message"])
 		}
 	})
 }
@@ -83,11 +88,11 @@ func TestJsonWithRedirect(t *testing.T) {
 
 	recorder := httptest.NewRecorder()
 
-	actualBody := []byte("{\"name\": \"cale\"}")
-	actualStatusCode := http.StatusOK
-	actualRedirect := "http://localhost:8080/tenant/LASA"
+	body := []byte("{\"name\": \"cale\"}")
+	statusCode := http.StatusOK
+	redirect := "http://localhost:8080/tenant/LASA"
 
-	_, _ = JsonWithRedirect(recorder, actualBody, actualRedirect, actualStatusCode)
+	_, _ = rest.JsonWithRedirect(recorder, body, redirect, statusCode)
 
 	result := recorder.Result()
 
@@ -103,7 +108,33 @@ func TestJsonWithRedirect(t *testing.T) {
 
 	headerLocation := result.Header.Get(location)
 
-	if actualRedirect != headerLocation {
+	if redirect != headerLocation {
 		t.Fatalf("expected a redirect to %s, got: %s", headerLocation, headerLocation)
 	}
+}
+
+func ExampleJson() {
+
+	product := struct {
+		Name  string  `json:"name"`
+		Price float32 `json:"price"`
+	}{
+		Name:  "Smart TV",
+		Price: 100.00,
+	}
+
+	bytes, _ := json.Marshal(&product)
+
+	recorder := httptest.NewRecorder()
+
+	_, _ = rest.Json(recorder, bytes, http.StatusOK)
+
+	result := recorder.Result()
+
+	defer result.Body.Close()
+
+	_, _ = io.Copy(os.Stdout, result.Body)
+
+	// Output: {"name":"Smart TV","price":100}
+
 }
