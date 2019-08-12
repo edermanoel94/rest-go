@@ -7,10 +7,10 @@ type PageRequest struct {
 	Direction rune
 }
 
-func NewPageRequest(offset, max int, direction string, properties ...string) (*PageRequest, error) {
+func NewPageRequest(offset, max int, direction rune, properties ...string) (*PageRequest, error) {
 	return paginate(offset, max, direction, properties...)
 }
 
-func paginate(offset, max int, direction string, properties ...string) (*PageRequest, error) {
+func paginate(offset, max int, direction rune, properties ...string) (*PageRequest, error) {
 	return nil, nil
 }

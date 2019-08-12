@@ -58,7 +58,7 @@ func TestJsonWithError(t *testing.T) {
 
 		recorder := httptest.NewRecorder()
 
-		_, _ = rest.JsonWithError(recorder, errorThrowed, statusCode)
+		_, _ = rest.Error(recorder, errorThrowed, statusCode)
 
 		result := recorder.Result()
 
@@ -92,7 +92,7 @@ func TestJsonWithRedirect(t *testing.T) {
 	statusCode := http.StatusOK
 	redirect := "http://localhost:8080/tenant/LASA"
 
-	_, _ = rest.JsonWithRedirect(recorder, body, redirect, statusCode)
+	_, _ = rest.Redirect(recorder, body, redirect, statusCode)
 
 	result := recorder.Result()
 

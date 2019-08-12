@@ -6,6 +6,6 @@ func TestCheckPathVariables(t *testing.T) {
 
 }
 
-func TestGetBodyRequest(t *testing.T) {
+func TestGetBody(t *testing.T) {
 
 }

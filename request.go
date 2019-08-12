@@ -3,8 +3,8 @@ package rest
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
-	"net/http"
 	"strings"
 )
 
@@ -27,12 +27,13 @@ func CheckPathVariables(params map[string]string, pathVariables ...string) error
 	return nil
 }
 
-// GetBodyRequest get the content body of request and unmarshal a reference to a struct
-func GetBodyOnRequest(r *http.Request, result interface{}) error {
+// GetBody get the content of body on request and unmarshal a struct reference to apply the body
+func GetBody(reader io.ReadCloser, result interface{}) error {
 
-	bytes, err := ioutil.ReadAll(r.Body)
+	bytes, err := ioutil.ReadAll(reader)
 
-	defer r.Body.Close()
+	// can be leaked?
+	defer reader.Close()
 
 	if err != nil {
 		return fmt.Errorf("couldn't read body of request: %v", err)
