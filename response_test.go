@@ -1,5 +1,3 @@
-//+build unit
-
 package rest_test
 
 import (
@@ -14,46 +12,50 @@ import (
 	"testing"
 )
 
-func TestResponse_Json(t *testing.T) {
+func TestContent(t *testing.T) {
 
-	recorder := httptest.NewRecorder()
+	// TODO: make many jsons invalid to check
 
-	body := []byte("{\"name\": \"cale\"}")
+	t.Run("should serialize message in bytes and send statusCode", func(t *testing.T) {
+		recorder := httptest.NewRecorder()
 
-	statusCode := http.StatusOK
+		body := []byte("{\"name\": \"cale\"}")
 
-	_, _ = rest.Json(recorder, body, statusCode)
+		statusCode := http.StatusOK
 
-	result := recorder.Result()
+		_, _ = rest.Content(recorder, body, statusCode)
 
-	defer result.Body.Close()
+		result := recorder.Result()
 
-	bytes, err := ioutil.ReadAll(result.Body)
+		defer result.Body.Close()
 
-	if err != nil {
-		t.Fatalf("cannot read recorder: %v", err)
-	}
+		bytes, err := ioutil.ReadAll(result.Body)
 
-	if len(body) != len(bytes) {
-		t.Fatalf("size of slice of bytes is different")
-	}
+		if err != nil {
+			t.Fatalf("cannot read recorder: %v", err)
+		}
 
-	if statusCode != result.StatusCode {
-		t.Fatalf("got status %d, but given %d", statusCode, result.StatusCode)
-	}
+		if len(body) != len(bytes) {
+			t.Fatalf("size of slice of bytes is different")
+		}
 
-	contentType := "Content-Type"
+		if statusCode != result.StatusCode {
+			t.Fatalf("got status %d, but given %d", statusCode, result.StatusCode)
+		}
 
-	if result.Header.Get(contentType) != "application/json" {
-		t.Fatalf("should be application/json, got: %s", result.Header.Get(contentType))
-	}
+		contentType := "Content-Type"
+
+		if result.Header.Get(contentType) != "application/json" {
+			t.Fatalf("should be application/json, got: %s", result.Header.Get(contentType))
+		}
+	})
 }
 
-func TestJsonWithError(t *testing.T) {
+func TestError(t *testing.T) {
 
-	t.Run("should send a signal error", func(t *testing.T) {
+	t.Run("should send a message of error with a status code 404", func(t *testing.T) {
 
-		errorThrowed := errors.New("error")
+		errorThrowed := errors.New("not found")
 		statusCode := http.StatusNotFound
 
 		recorder := httptest.NewRecorder()
@@ -81,39 +83,45 @@ func TestJsonWithError(t *testing.T) {
 		if errorThrowed.Error() != content["message"] {
 			t.Fatalf("expected: %s, got: %s", errorThrowed.Error(), content["message"])
 		}
+
+		if statusCode != result.StatusCode {
+			t.Fatalf("expected: %d, got: %d", statusCode, result.StatusCode)
+		}
 	})
 }
 
-func TestJsonWithRedirect(t *testing.T) {
+func TestRedirect(t *testing.T) {
 
-	recorder := httptest.NewRecorder()
+	t.Run("", func(t *testing.T) {
+		recorder := httptest.NewRecorder()
 
-	body := []byte("{\"name\": \"cale\"}")
-	statusCode := http.StatusOK
-	redirect := "http://localhost:8080/tenant/LASA"
+		body := []byte("{\"name\": \"cale\"}")
+		statusCode := http.StatusOK
+		redirect := "http://localhost:8080/"
 
-	_, _ = rest.Redirect(recorder, body, redirect, statusCode)
+		_, _ = rest.Redirect(recorder, body, redirect, statusCode)
 
-	result := recorder.Result()
+		result := recorder.Result()
 
-	defer result.Body.Close()
+		defer result.Body.Close()
 
-	_, err := ioutil.ReadAll(result.Body)
+		_, err := ioutil.ReadAll(result.Body)
 
-	if err != nil {
-		t.Fatalf("cannot read recorder: %v", err)
-	}
+		if err != nil {
+			t.Fatalf("cannot read recorder: %v", err)
+		}
 
-	location := "Location"
+		location := "Location"
 
-	headerLocation := result.Header.Get(location)
+		headerLocation := result.Header.Get(location)
 
-	if redirect != headerLocation {
-		t.Fatalf("expected a redirect to %s, got: %s", headerLocation, headerLocation)
-	}
+		if redirect != headerLocation {
+			t.Fatalf("expected a redirect to %s, got: %s", headerLocation, headerLocation)
+		}
+	})
 }
 
-func ExampleJson() {
+func ExampleContent() {
 
 	product := struct {
 		Name  string  `json:"name"`
@@ -127,7 +135,7 @@ func ExampleJson() {
 
 	recorder := httptest.NewRecorder()
 
-	_, _ = rest.Json(recorder, bytes, http.StatusOK)
+	_, _ = rest.Content(recorder, bytes, http.StatusOK)
 
 	result := recorder.Result()
 

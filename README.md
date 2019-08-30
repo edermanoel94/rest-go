@@ -17,13 +17,14 @@ func SomeHandler(w http.ResponseWriter, r *http.Request) {
     
     if err != nil {
     	w.WriteHeader(http.StatusInternalServerError)
+        // super bad!
         message := fmt.Sprintf("{\"message\": \"%s\"}", err.Error())
-    	_, _ = w.Write([]byte(message))
+    	w.Write([]byte(message))
 	    return
     }
     
     w.WriteHeader(http.StatusOk)
-    _, _ = w.Write(bytes)
+    w.Write(bytes)
 }
 ```
 
@@ -59,43 +60,18 @@ func SomeHandler(w http.ResponseWriter, r *http.Request) {
 	
     product := &product{"Smart TV", 50.00}
 
-    bytes, err := json.Marshal(product)
-    
-    if err != nil {
-        // JsonWithError let u write a custom error message on json formatted
-        _, _ = rest.JsonWithError(w, err, http.StatusInternalServerError)
-        return
-    }
-
-    // Json use if u want customize your json.Marshal in someway
-    _, _ = rest.Json(w, bytes, http.StatusOK)
+    // rest.Marshalled marshall the struct and respond json.
+    rest.Marshalled(w, product, http.StatusOK)
 }
 ```
 
-Simplified
+TODO List
+=========
 
-```go
-package yours
-
-import (
-    "encoding/json"
-    "github.com/edermanoel94/rest-go"
-    "net/http"
-)
-
-type product struct {
-    Name  string `json:"name"`
-    Price float32 `json:"price"`
-}
-
-func SomeHandler(w http.ResponseWriter, r *http.Request) {
-	
-    product := &product{"Smart TV", 50.00}
-
-    // JsonMarshalled marshall the struct for u and respond json.
-    _, _ := rest.JsonMarshalled(w, product, http.StatusOK)
-}
-```
+- [ ] Working with pagination and test
+- [ ] Working with custom errors
+- [ ] Test unit for request
+- [x] Test unit for response
 
 Installation
 ============
