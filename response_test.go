@@ -49,6 +49,40 @@ func TestContent(t *testing.T) {
 			t.Fatalf("should be application/json, got: %s", result.Header.Get(contentType))
 		}
 	})
+
+	t.Run("should send a nil in message and send statusCode", func(t *testing.T) {
+		recorder := httptest.NewRecorder()
+
+		var body []byte
+
+		statusCode := http.StatusOK
+
+		_, _ = rest.Content(recorder, body, statusCode)
+
+		result := recorder.Result()
+
+		defer result.Body.Close()
+
+		bytes, err := ioutil.ReadAll(result.Body)
+
+		if err != nil {
+			t.Fatalf("cannot read recorder: %v", err)
+		}
+
+		if len(body) != len(bytes) {
+			t.Fatalf("size of slice of bytes is different")
+		}
+
+		if statusCode != result.StatusCode {
+			t.Fatalf("got status %d, but given %d", statusCode, result.StatusCode)
+		}
+
+		contentType := "Content-Type"
+
+		if result.Header.Get(contentType) != "application/json" {
+			t.Fatalf("should be application/json, got: %s", result.Header.Get(contentType))
+		}
+	})
 }
 
 func TestError(t *testing.T) {
