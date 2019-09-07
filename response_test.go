@@ -12,6 +12,16 @@ import (
 	"testing"
 )
 
+type CustomError struct {
+	Description string `json:"description"`
+	Code        string `json:"code"`
+}
+
+func (c CustomError) Error() string {
+	bytes, _ := json.Marshal(&c)
+	return string(bytes)
+}
+
 func TestContent(t *testing.T) {
 
 	// TODO: make many jsons invalid to check
@@ -116,6 +126,49 @@ func TestError(t *testing.T) {
 
 		if errorThrowed.Error() != content["message"] {
 			t.Fatalf("expected: %s, got: %s", errorThrowed.Error(), content["message"])
+		}
+
+		if statusCode != result.StatusCode {
+			t.Fatalf("expected: %d, got: %d", statusCode, result.StatusCode)
+		}
+	})
+
+	t.Run("should send a custom error message", func(t *testing.T) {
+
+		customError := CustomError{
+			Description: "cannot found",
+			Code:        "001",
+		}
+		statusCode := http.StatusNotFound
+
+		recorder := httptest.NewRecorder()
+
+		_, _ = rest.Error(recorder, customError, statusCode)
+
+		result := recorder.Result()
+
+		defer result.Body.Close()
+
+		bytes, err := ioutil.ReadAll(result.Body)
+
+		if err != nil {
+			t.Fatalf("cannot read recorder: %v", err)
+		}
+
+		content := map[string]string{}
+
+		err = json.Unmarshal(bytes, &content)
+
+		if err != nil {
+			t.Fatalf("couldn't unmarshal: %v", err)
+		}
+
+		if customError.Description != content["description"] {
+			t.Fatalf("expected: %s, got: %s", customError.Description, content["description"])
+		}
+
+		if customError.Code != content["code"] {
+			t.Fatalf("expected: %s, got: %s", customError.Code, content["code"])
 		}
 
 		if statusCode != result.StatusCode {
