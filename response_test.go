@@ -124,7 +124,7 @@ func TestError(t *testing.T) {
 	})
 }
 
-func TestRedirect(t *testing.T) {
+func TestLocation(t *testing.T) {
 
 	t.Run("", func(t *testing.T) {
 		recorder := httptest.NewRecorder()
@@ -133,7 +133,7 @@ func TestRedirect(t *testing.T) {
 		statusCode := http.StatusOK
 		redirect := "http://localhost:8080/"
 
-		_, _ = rest.Redirect(recorder, body, redirect, statusCode)
+		_, _ = rest.Location(recorder, body, redirect, statusCode)
 
 		result := recorder.Result()
 
