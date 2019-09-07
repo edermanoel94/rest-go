@@ -12,12 +12,12 @@ import (
 	"testing"
 )
 
-type CustomError struct {
+type customError struct {
 	Description string `json:"description"`
 	Code        string `json:"code"`
 }
 
-func (c CustomError) Error() string {
+func (c customError) Error() string {
 	bytes, _ := json.Marshal(&c)
 	return string(bytes)
 }
@@ -135,7 +135,7 @@ func TestError(t *testing.T) {
 
 	t.Run("should send a custom error message", func(t *testing.T) {
 
-		customError := CustomError{
+		customError := customError{
 			Description: "cannot found",
 			Code:        "001",
 		}
