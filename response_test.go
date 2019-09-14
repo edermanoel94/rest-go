@@ -128,6 +128,7 @@ func TestError(t *testing.T) {
 	})
 }
 
+// TODO: error if not send a location
 func TestLocation(t *testing.T) {
 
 	t.Run("should send a message with header `Location` and url", func(t *testing.T) {
@@ -178,6 +179,10 @@ func TestMarshalled(t *testing.T) {
 
 		assert.Contains(t, string(body), "name")
 		assert.Contains(t, string(body), "Eder")
+	})
+
+	t.Run("should not marshal if is a non-struct", func(t *testing.T) {
+
 	})
 }
 
