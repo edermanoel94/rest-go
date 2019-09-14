@@ -3,7 +3,9 @@ package rest_test
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/edermanoel94/rest-go"
+	"github.com/stretchr/testify/assert"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -24,74 +26,54 @@ func (c customError) Error() string {
 
 func TestContent(t *testing.T) {
 
-	// TODO: make many jsons invalid to check
+	// TODO: make many jsons invalid to check, WIP
 
 	t.Run("should serialize message in bytes and send statusCode", func(t *testing.T) {
-		recorder := httptest.NewRecorder()
 
-		body := []byte("{\"name\": \"cale\"}")
-
+		payloadSend := []byte("{\"name\": \"cale\"}")
 		statusCode := http.StatusOK
 
-		_, _ = rest.Content(recorder, body, statusCode)
+		recorder := httptest.NewRecorder()
+
+		rest.Content(recorder, payloadSend, statusCode)
 
 		result := recorder.Result()
 
 		defer result.Body.Close()
 
-		bytes, err := ioutil.ReadAll(result.Body)
+		bytesReceived, err := ioutil.ReadAll(result.Body)
 
 		if err != nil {
 			t.Fatalf("cannot read recorder: %v", err)
 		}
 
-		if len(body) != len(bytes) {
-			t.Fatalf("size of slice of bytes is different")
-		}
-
-		if statusCode != result.StatusCode {
-			t.Fatalf("got status %d, but given %d", statusCode, result.StatusCode)
-		}
-
-		contentType := "Content-Type"
-
-		if result.Header.Get(contentType) != "application/json" {
-			t.Fatalf("should be application/json, got: %s", result.Header.Get(contentType))
-		}
+		assert.Equal(t, len(payloadSend), len(bytesReceived))
+		assert.Equal(t, statusCode, result.StatusCode)
+		assert.Equal(t, "application/json", result.Header.Get("Content-Type"))
 	})
 
 	t.Run("should send a nil in message and send statusCode", func(t *testing.T) {
+
 		recorder := httptest.NewRecorder()
 
-		var body []byte
-
+		var payloadSend []byte
 		statusCode := http.StatusOK
 
-		_, _ = rest.Content(recorder, body, statusCode)
+		rest.Content(recorder, nil, statusCode)
 
 		result := recorder.Result()
 
 		defer result.Body.Close()
 
-		bytes, err := ioutil.ReadAll(result.Body)
+		bytesReceived, err := ioutil.ReadAll(result.Body)
 
 		if err != nil {
 			t.Fatalf("cannot read recorder: %v", err)
 		}
 
-		if len(body) != len(bytes) {
-			t.Fatalf("size of slice of bytes is different")
-		}
-
-		if statusCode != result.StatusCode {
-			t.Fatalf("got status %d, but given %d", statusCode, result.StatusCode)
-		}
-
-		contentType := "Content-Type"
-
-		if result.Header.Get(contentType) != "application/json" {
-			t.Fatalf("should be application/json, got: %s", result.Header.Get(contentType))
-		}
+		assert.Equal(t, len(payloadSend), len(bytesReceived))
+		assert.Equal(t, statusCode, result.StatusCode)
+		assert.Equal(t, "application/json", result.Header.Get("Content-Type"))
 	})
 }
 
@@ -110,27 +92,14 @@ func TestError(t *testing.T) {
 
 		defer result.Body.Close()
 
-		bytes, err := ioutil.ReadAll(result.Body)
+		payloadReceived, err := ioutil.ReadAll(result.Body)
 
 		if err != nil {
 			t.Fatalf("cannot read recorder: %v", err)
 		}
 
-		content := map[string]string{}
-
-		err = json.Unmarshal(bytes, &content)
-
-		if err != nil {
-			t.Fatalf("couldn't unmarshal: %v", err)
-		}
-
-		if errorThrowed.Error() != content["message"] {
-			t.Fatalf("expected: %s, got: %s", errorThrowed.Error(), content["message"])
-		}
-
-		if statusCode != result.StatusCode {
-			t.Fatalf("expected: %d, got: %d", statusCode, result.StatusCode)
-		}
+		assert.Contains(t, string(payloadReceived), "not found")
+		assert.Equal(t, statusCode, result.StatusCode)
 	})
 
 	t.Run("should send a custom error message", func(t *testing.T) {
@@ -143,50 +112,33 @@ func TestError(t *testing.T) {
 
 		recorder := httptest.NewRecorder()
 
-		_, _ = rest.Error(recorder, customError, statusCode)
+		rest.Error(recorder, customError, statusCode)
 
 		result := recorder.Result()
 
 		defer result.Body.Close()
 
-		bytes, err := ioutil.ReadAll(result.Body)
+		payloadReceived, err := ioutil.ReadAll(result.Body)
 
 		if err != nil {
 			t.Fatalf("cannot read recorder: %v", err)
 		}
 
-		content := map[string]string{}
-
-		err = json.Unmarshal(bytes, &content)
-
-		if err != nil {
-			t.Fatalf("couldn't unmarshal: %v", err)
-		}
-
-		if customError.Description != content["description"] {
-			t.Fatalf("expected: %s, got: %s", customError.Description, content["description"])
-		}
-
-		if customError.Code != content["code"] {
-			t.Fatalf("expected: %s, got: %s", customError.Code, content["code"])
-		}
-
-		if statusCode != result.StatusCode {
-			t.Fatalf("expected: %d, got: %d", statusCode, result.StatusCode)
-		}
+		fmt.Println(string(payloadReceived))
 	})
 }
 
 func TestLocation(t *testing.T) {
 
-	t.Run("", func(t *testing.T) {
+	t.Run("should send a message with header `Location` and url", func(t *testing.T) {
+
 		recorder := httptest.NewRecorder()
 
-		body := []byte("{\"name\": \"cale\"}")
+		payloadSend := []byte("{\"name\": \"cale\"}")
 		statusCode := http.StatusOK
 		redirect := "http://localhost:8080/"
 
-		_, _ = rest.Location(recorder, body, redirect, statusCode)
+		_, _ = rest.Location(recorder, payloadSend, redirect, statusCode)
 
 		result := recorder.Result()
 
@@ -198,13 +150,34 @@ func TestLocation(t *testing.T) {
 			t.Fatalf("cannot read recorder: %v", err)
 		}
 
-		location := "Location"
+		assert.Equal(t, redirect, result.Header.Get("Location"))
+		assert.Equal(t, statusCode, result.StatusCode)
+	})
+}
 
-		headerLocation := result.Header.Get(location)
+func TestMarshalled(t *testing.T) {
 
-		if redirect != headerLocation {
-			t.Fatalf("expected a redirect to %s, got: %s", headerLocation, headerLocation)
+	t.Run("should marshal struct correctly", func(t *testing.T) {
+		recorder := httptest.NewRecorder()
+
+		exampleToMarshal := struct {
+			Name string `json:"name"`
+		}{"Eder"}
+
+		rest.Marshalled(recorder, &exampleToMarshal, http.StatusInternalServerError)
+
+		result := recorder.Result()
+
+		defer result.Body.Close()
+
+		body, err := ioutil.ReadAll(result.Body)
+
+		if err != nil {
+			t.Fatal(err)
 		}
+
+		assert.Contains(t, string(body), "name")
+		assert.Contains(t, string(body), "Eder")
 	})
 }
 

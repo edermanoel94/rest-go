@@ -12,6 +12,7 @@ func Content(w http.ResponseWriter, body []byte, code int) (int, error) {
 	return response(w, body, code)
 }
 
+// TODO: check if body match with struct
 func Marshalled(w http.ResponseWriter, v interface{}, code int) (int, error) {
 	bytes, err := json.Marshal(v)
 	if err != nil {
@@ -24,9 +25,12 @@ func Error(w http.ResponseWriter, err error, code int) (int, error) {
 
 	var bytes []byte
 
-	switch of := reflect.TypeOf(err); of.Kind() {
+	switch typeOf := reflect.TypeOf(err); typeOf.Kind() {
 	case reflect.Struct:
-		bytes, _ = json.Marshal(err)
+		bytes, err = json.Marshal(err)
+		if err != nil {
+			return Content(w, formatMessageError(err.Error()), http.StatusInternalServerError)
+		}
 	default:
 		bytes = formatMessageError(err.Error())
 	}
