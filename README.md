@@ -59,7 +59,6 @@ type product struct {
 func SomeHandler(w http.ResponseWriter, r *http.Request) {
 	
     product := &product{"Smart TV", 50.00}
-
     // rest.Marshalled marshall the struct and respond json.
     rest.Marshalled(w, product, http.StatusOK)
 }
@@ -112,14 +111,16 @@ type product struct {
 func SomePostHandler(w http.ResponseWriter, r *http.Request) {
 
     product := product{}
-
-    rest.GetBody(r.Body, &product)
+    err := rest.GetBody(r.Body, &product)
+    if err != nil {
+        // do stuff with error
+    }
 
     // Save/Update Whatever ur want to do with body
 }    
 ```
 
-Working with [`mux`](https://github.com/gorilla/mux "API documentation")
+Working with [`mux`](https://github.com/gorilla/mux "API documentation") package to check if path variable exist.
 
 ```go
 package yours
@@ -135,12 +136,13 @@ type product struct {
     Price float32 `json:"price"`
 }
 
-// [GET] url: /product/{id} body: {"name": "eder", "price": 20.00}
+// [GET] url: /product/{id}
 func SomePostHandler(w http.ResponseWriter, r *http.Request) {
-	
     params := mux.Vars(r)
-    
-    rest.CheckPathVariables(params, "id")
+    err := rest.CheckPathVariables(params, "id")
+    if err != nil {
+        // do stuff with error
+    }
 }
 ```
 
