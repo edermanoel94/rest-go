@@ -1,4 +1,4 @@
-Rest GO - Helpful library  for Rest API
+Rest GO - Helpful library for Rest API
 ================================
 
 A package that provide many helpful methods for working with rest api.
@@ -30,7 +30,7 @@ func SomeHandler(w http.ResponseWriter, r *http.Request) {
 
 Get started:
 
-  * Install rest GO with [one line of code](#installation), or [update it with another](#staying-up-to-date)
+  * Install rest GO with [one line of code](#installation)
 
 
 [`rest`](http://godoc.org/github.com/edermanoel94/rest-go "API documentation") package
@@ -65,12 +65,91 @@ func SomeHandler(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
+Working with body request on methods: [PUT, PATCH, POST]:
+
+```go
+package yours
+
+import (
+    "encoding/json"
+    "github.com/edermanoel94/rest-go"
+    "net/http"
+)
+
+type product struct {
+    Name  string `json:"name"`
+    Price float32 `json:"price"`
+}
+
+// [POST] body: {"name": "eder", "price": 20.00}
+func SomePostHandler(w http.ResponseWriter, r *http.Request) {
+
+    product := product{}
+
+    rest.GetBody(r.Body, &product)
+
+    // Save/Update Whatever ur want to do with body
+}
+```
+
+Working with Path variables:
+
+```go
+package yours
+
+import (
+    "encoding/json"
+    "github.com/edermanoel94/rest-go"
+    "net/http"
+)
+
+type product struct {
+    Name  string `json:"name"`
+    Price float32 `json:"price"`
+}
+
+// [POST] body: {"name": "eder", "price": 20.00}
+func SomePostHandler(w http.ResponseWriter, r *http.Request) {
+
+    product := product{}
+
+    rest.GetBody(r.Body, &product)
+
+    // Save/Update Whatever ur want to do with body
+}    
+```
+
+Working with [`mux`](https://github.com/gorilla/mux "API documentation")
+
+```go
+package yours
+
+import (
+    "encoding/json"
+    "github.com/edermanoel94/rest-go"
+    "net/http"
+)
+
+type product struct {
+    Name  string `json:"name"`
+    Price float32 `json:"price"`
+}
+
+// [GET] url: /product/{id} body: {"name": "eder", "price": 20.00}
+func SomePostHandler(w http.ResponseWriter, r *http.Request) {
+	
+    params := mux.Vars(r)
+    
+    rest.CheckPathVariables(params, "id")
+}
+```
+
 TODO List
 =========
 
 - [ ] Working with pagination and test
 - [ ] Working with custom errors
-- [ ] Test unit for request
+- [x] Test unit for request
 - [x] Test unit for response
 
 Installation
