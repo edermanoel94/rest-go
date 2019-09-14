@@ -64,34 +64,7 @@ func SomeHandler(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-Working with body request on methods: [PUT, PATCH, POST]:
-
-```go
-package yours
-
-import (
-    "encoding/json"
-    "github.com/edermanoel94/rest-go"
-    "net/http"
-)
-
-type product struct {
-    Name  string `json:"name"`
-    Price float32 `json:"price"`
-}
-
-// [POST] body: {"name": "eder", "price": 20.00}
-func SomePostHandler(w http.ResponseWriter, r *http.Request) {
-
-    product := product{}
-
-    rest.GetBody(r.Body, &product)
-
-    // Save/Update Whatever ur want to do with body
-}
-```
-
-Working with Path variables:
+A payload send to your API and desarialize to a struct, to easy!
 
 ```go
 package yours
@@ -116,7 +89,7 @@ func SomePostHandler(w http.ResponseWriter, r *http.Request) {
         // do stuff with error
     }
 
-    // Save/Update Whatever ur want to do with body
+    // Save/Update Whatever ur want to do
 }    
 ```
 
@@ -151,8 +124,6 @@ TODO List
 
 - [ ] Working with pagination and test
 - [ ] Working with custom errors
-- [x] Test unit for request
-- [x] Test unit for response
 
 Installation
 ============
