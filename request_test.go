@@ -67,11 +67,7 @@ func TestGetBody(t *testing.T) {
 		assert.Equal(t, "eder", result.Name, fmt.Sprintf("expected: %s, got: %s", "eder", result.Name))
 	})
 
-	t.Run("should failed", func(t *testing.T) {
-
-		//result := struct {
-		//	Name string `json:"name"`
-		//}{}
+	t.Run("should not unmarshal if send a nil on result", func(t *testing.T) {
 
 		reader := strings.NewReader("{\"name\": \"eder\"}")
 
@@ -79,10 +75,29 @@ func TestGetBody(t *testing.T) {
 
 		err := rest.GetBody(readerCloser, nil)
 
-		if err != nil {
+		if err == nil {
 			t.Fatal(err)
 		}
 
-		assert.EqualError(t, err, "")
+		assert.Contains(t, err.Error(), "couldn't unmarshal")
+	})
+
+	t.Run("should not unmarshal if send a Reader with empty string", func(t *testing.T) {
+
+		result := struct {
+			Name string `json:"name"`
+		}{}
+
+		reader := strings.NewReader("}")
+
+		readerCloser := ioutil.NopCloser(reader)
+
+		err := rest.GetBody(readerCloser, result)
+
+		if err == nil {
+			t.Fatal(err)
+		}
+
+		assert.Contains(t, err.Error(), "couldn't unmarshal")
 	})
 }

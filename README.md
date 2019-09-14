@@ -17,10 +17,10 @@ func SomeHandler(w http.ResponseWriter, r *http.Request) {
     
     if err != nil {
     	w.WriteHeader(http.StatusInternalServerError)
-        // super bad!
+        // this is super bad!
         message := fmt.Sprintf("{\"message\": \"%s\"}", err.Error())
     	w.Write([]byte(message))
-	    return
+        return
     }
     
     w.WriteHeader(http.StatusOk)
