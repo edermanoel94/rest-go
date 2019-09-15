@@ -5,9 +5,11 @@ import (
 	"errors"
 	"github.com/edermanoel94/rest-go"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"strings"
 )
 
 func ExampleMarshalled() {
@@ -76,8 +78,32 @@ func ExampleError() {
 
 func ExampleGetBody() {
 
+	product := &struct {
+		Name string `json:"name"`
+	}{}
+
+	readerCloser := ioutil.NopCloser(strings.NewReader("{\"name\": \"eder\"}"))
+
+	err := rest.GetBody(readerCloser, &product)
+
+	if err != nil {
+		// do stuff with error
+	}
+
+	// Output:
 }
 
 func ExampleCheckPathVariables() {
 
+	params := make(map[string]string)
+
+	params["id"] = "21321423"
+
+	err := rest.CheckPathVariables(params, "id")
+
+	if err != nil {
+		// do stuff with error
+	}
+
+	// Output:
 }

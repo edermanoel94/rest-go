@@ -54,9 +54,7 @@ func TestGetBody(t *testing.T) {
 			Name string `json:"name"`
 		}{}
 
-		reader := strings.NewReader("{\"name\": \"eder\"}")
-
-		readerCloser := ioutil.NopCloser(reader)
+		readerCloser := ioutil.NopCloser(strings.NewReader("{\"name\": \"eder\"}"))
 
 		err := rest.GetBody(readerCloser, &result)
 
