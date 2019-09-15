@@ -33,13 +33,10 @@ func Error(w http.ResponseWriter, err error, code int) (int, error) {
 	var bytes []byte
 
 	switch typeOf := reflect.TypeOf(err); typeOf.Kind() {
-	case reflect.Struct:
-		bytes, err = json.Marshal(err)
-		if err != nil {
-			return Content(w, defaultErrorMessage(err), http.StatusInternalServerError)
-		}
-	default:
+	case reflect.Ptr:
 		bytes = defaultErrorMessage(err)
+	default:
+		return Content(w, []byte(err.Error()), http.StatusInternalServerError)
 	}
 
 	return Content(w, bytes, code)

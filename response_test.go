@@ -3,7 +3,6 @@ package rest_test
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"github.com/edermanoel94/rest-go"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
@@ -19,6 +18,13 @@ type customError struct {
 
 func (c customError) Error() string {
 	bytes, _ := json.Marshal(&c)
+	return string(bytes)
+}
+
+type mapError map[string]interface{}
+
+func (m mapError) Error() string {
+	bytes, _ := json.Marshal(&m)
 	return string(bytes)
 }
 
@@ -121,7 +127,7 @@ func TestError(t *testing.T) {
 		assert.Equal(t, http.StatusInternalServerError, result.StatusCode)
 	})
 
-	t.Run("should send a custom error message", func(t *testing.T) {
+	t.Run("should send a custom struct error message which implements error interface", func(t *testing.T) {
 
 		customError := customError{
 			Description: "cannot found",
@@ -144,7 +150,32 @@ func TestError(t *testing.T) {
 			t.Fatalf("cannot read recorder: %v", err)
 		}
 
-		fmt.Println(string(payloadReceived))
+		assert.Contains(t, customError.Error(), string(payloadReceived))
+	})
+
+	t.Run("should send a custom map error message which implements error interface", func(t *testing.T) {
+
+		customError := make(mapError)
+
+		customError["message"] = "error"
+
+		statusCode := http.StatusNotFound
+
+		recorder := httptest.NewRecorder()
+
+		rest.Error(recorder, customError, statusCode)
+
+		result := recorder.Result()
+
+		defer result.Body.Close()
+
+		payloadReceived, err := ioutil.ReadAll(result.Body)
+
+		if err != nil {
+			t.Fatalf("cannot read recorder: %v", err)
+		}
+
+		assert.Exactly(t, customError.Error(), string(payloadReceived))
 	})
 }
 
