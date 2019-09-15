@@ -2,9 +2,13 @@ package rest
 
 import (
 	"encoding/json"
-	"fmt"
+	"errors"
 	"net/http"
 	"reflect"
+)
+
+var (
+	ErrIsNil = errors.New("error cannot be nil")
 )
 
 func Content(w http.ResponseWriter, body []byte, code int) (int, error) {
@@ -12,7 +16,6 @@ func Content(w http.ResponseWriter, body []byte, code int) (int, error) {
 	return response(w, body, code)
 }
 
-// TODO: check if body match with struct
 func Marshalled(w http.ResponseWriter, v interface{}, code int) (int, error) {
 	bytes, err := json.Marshal(v)
 	if err != nil {
@@ -23,28 +26,23 @@ func Marshalled(w http.ResponseWriter, v interface{}, code int) (int, error) {
 
 func Error(w http.ResponseWriter, err error, code int) (int, error) {
 
+	if err == nil {
+		return Content(w, defaultErrorMessage(ErrIsNil), http.StatusInternalServerError)
+	}
+
 	var bytes []byte
 
 	switch typeOf := reflect.TypeOf(err); typeOf.Kind() {
 	case reflect.Struct:
 		bytes, err = json.Marshal(err)
 		if err != nil {
-			return Content(w, formatMessageError(err.Error()), http.StatusInternalServerError)
+			return Content(w, defaultErrorMessage(err), http.StatusInternalServerError)
 		}
 	default:
-		bytes = formatMessageError(err.Error())
+		bytes = defaultErrorMessage(err)
 	}
 
 	return Content(w, bytes, code)
-}
-
-func Location(w http.ResponseWriter, body []byte, url string, code int) (int, error) {
-	w.Header().Add(location, url)
-	return Content(w, body, code)
-}
-
-func formatMessageError(message string) []byte {
-	return []byte(fmt.Sprintf("{\"message\": \"%s\"}", message))
 }
 
 func response(w http.ResponseWriter, body []byte, code int) (int, error) {

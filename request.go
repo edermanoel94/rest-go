@@ -8,8 +8,7 @@ import (
 	"strings"
 )
 
-// CheckPathVariables see if any pathVariables match on params, if dont,
-// just add to a slice and return a error
+// CheckPathVariables see if any pathVariables match on params, if dont, add to a slice.
 func CheckPathVariables(params map[string]string, pathVariables ...string) error {
 
 	fields := make([]string, 0)
@@ -27,12 +26,11 @@ func CheckPathVariables(params map[string]string, pathVariables ...string) error
 	return nil
 }
 
-// GetBody get the content of body on request and unmarshal a struct reference to apply the body
+// GetBody get the content of body on request and unmarshal a pointer to a <T> to attach on body
 func GetBody(reader io.ReadCloser, result interface{}) error {
 
 	bytes, err := ioutil.ReadAll(reader)
 
-	// can be leaked?
 	defer reader.Close()
 
 	if err != nil {

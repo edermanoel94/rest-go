@@ -6,11 +6,9 @@ import (
 	"fmt"
 	"github.com/edermanoel94/rest-go"
 	"github.com/stretchr/testify/assert"
-	"io"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"testing"
 )
 
@@ -25,8 +23,6 @@ func (c customError) Error() string {
 }
 
 func TestContent(t *testing.T) {
-
-	// TODO: make many jsons invalid to check, WIP
 
 	t.Run("should serialize message in bytes and send statusCode", func(t *testing.T) {
 
@@ -79,7 +75,7 @@ func TestContent(t *testing.T) {
 
 func TestError(t *testing.T) {
 
-	t.Run("should send a message of error with a status code 404", func(t *testing.T) {
+	t.Run("should send a message of error with a status code", func(t *testing.T) {
 
 		errorThrowed := errors.New("not found")
 		statusCode := http.StatusNotFound
@@ -102,12 +98,36 @@ func TestError(t *testing.T) {
 		assert.Equal(t, statusCode, result.StatusCode)
 	})
 
+	t.Run("should send a nil error and given a `ErrIsNil`", func(t *testing.T) {
+
+		var errorThrowed error
+		statusCode := http.StatusNotFound
+
+		recorder := httptest.NewRecorder()
+
+		rest.Error(recorder, errorThrowed, statusCode)
+
+		result := recorder.Result()
+
+		defer result.Body.Close()
+
+		payloadReceived, err := ioutil.ReadAll(result.Body)
+
+		if err != nil {
+			t.Fatalf("cannot read recorder: %v", err)
+		}
+
+		assert.Contains(t, string(payloadReceived), rest.ErrIsNil.Error())
+		assert.Equal(t, http.StatusInternalServerError, result.StatusCode)
+	})
+
 	t.Run("should send a custom error message", func(t *testing.T) {
 
 		customError := customError{
 			Description: "cannot found",
 			Code:        "001",
 		}
+
 		statusCode := http.StatusNotFound
 
 		recorder := httptest.NewRecorder()
@@ -125,34 +145,6 @@ func TestError(t *testing.T) {
 		}
 
 		fmt.Println(string(payloadReceived))
-	})
-}
-
-// TODO: error if not send a location
-func TestLocation(t *testing.T) {
-
-	t.Run("should send a message with header `Location` and url", func(t *testing.T) {
-
-		recorder := httptest.NewRecorder()
-
-		payloadSend := []byte("{\"name\": \"cale\"}")
-		statusCode := http.StatusOK
-		redirect := "http://localhost:8080/"
-
-		_, _ = rest.Location(recorder, payloadSend, redirect, statusCode)
-
-		result := recorder.Result()
-
-		defer result.Body.Close()
-
-		_, err := ioutil.ReadAll(result.Body)
-
-		if err != nil {
-			t.Fatalf("cannot read recorder: %v", err)
-		}
-
-		assert.Equal(t, redirect, result.Header.Get("Location"))
-		assert.Equal(t, statusCode, result.StatusCode)
 	})
 }
 
@@ -184,30 +176,4 @@ func TestMarshalled(t *testing.T) {
 	t.Run("should not marshal if is a non-struct", func(t *testing.T) {
 
 	})
-}
-
-func ExampleContent() {
-
-	product := struct {
-		Name  string  `json:"name"`
-		Price float32 `json:"price"`
-	}{
-		Name:  "Smart TV",
-		Price: 100.00,
-	}
-
-	bytes, _ := json.Marshal(&product)
-
-	recorder := httptest.NewRecorder()
-
-	_, _ = rest.Content(recorder, bytes, http.StatusOK)
-
-	result := recorder.Result()
-
-	defer result.Body.Close()
-
-	_, _ = io.Copy(os.Stdout, result.Body)
-
-	// Output: {"name":"Smart TV","price":100}
-
 }
