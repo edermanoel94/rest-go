@@ -150,30 +150,37 @@ func TestError(t *testing.T) {
 
 func TestMarshalled(t *testing.T) {
 
-	t.Run("should marshal struct correctly", func(t *testing.T) {
-		recorder := httptest.NewRecorder()
-
-		exampleToMarshal := struct {
+	testCases := []struct {
+		description string
+		actual      interface{}
+		contains    string
+	}{
+		{"should marshal struct correctly", struct {
 			Name string `json:"name"`
-		}{"Eder"}
+		}{"Eder"}, "Eder"},
+		{"should marshal to a 0 if is a pointer to int", 0, "0"},
+		{"should not marshal to a null if is a nil", nil, "null"},
+	}
 
-		rest.Marshalled(recorder, &exampleToMarshal, http.StatusInternalServerError)
+	for _, tc := range testCases {
+		t.Run(tc.description, func(t *testing.T) {
 
-		result := recorder.Result()
+			recorder := httptest.NewRecorder()
 
-		defer result.Body.Close()
+			rest.Marshalled(recorder, &tc.actual, http.StatusInternalServerError)
 
-		body, err := ioutil.ReadAll(result.Body)
+			result := recorder.Result()
 
-		if err != nil {
-			t.Fatal(err)
-		}
+			defer result.Body.Close()
 
-		assert.Contains(t, string(body), "name")
-		assert.Contains(t, string(body), "Eder")
-	})
+			body, err := ioutil.ReadAll(result.Body)
 
-	t.Run("should not marshal if is a non-struct", func(t *testing.T) {
+			if err != nil {
+				t.Fatal(err)
+			}
 
-	})
+			assert.Contains(t, string(body), tc.contains)
+		})
+
+	}
 }
