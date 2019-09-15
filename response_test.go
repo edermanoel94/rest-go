@@ -177,6 +177,8 @@ func TestError(t *testing.T) {
 
 		assert.Exactly(t, customError.Error(), string(payloadReceived))
 	})
+
+	// TODO: add more tests with custom error on pointer
 }
 
 func TestMarshalled(t *testing.T) {
