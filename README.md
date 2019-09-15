@@ -1,5 +1,7 @@
 Rest GO - Helpful library for Rest API
-================================
+======================================
+
+[![eder](https://img.shields.io/badge/go-documentation-blue.svg?style=flat-square)]((https://godoc.org/github.com/edermanoel94/rest-go))
 
 A package that provide many helpful methods for working with rest api.
 
