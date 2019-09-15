@@ -125,7 +125,7 @@ TODO List
 =========
 
 - [ ] Working with pagination and test
-- [ ] Working with custom errors
+- [x] Working with custom errors
 - [ ] More tests
 
 Installation
