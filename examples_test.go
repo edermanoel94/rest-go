@@ -78,7 +78,7 @@ func ExampleError() {
 
 func ExampleGetBody() {
 
-	product := &struct {
+	product := struct {
 		Name string `json:"name"`
 	}{}
 
