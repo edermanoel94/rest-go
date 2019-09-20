@@ -1,5 +1,4 @@
 .idea
 vendor
 examples
-Gopkg.lock
 db
