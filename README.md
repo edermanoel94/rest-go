@@ -121,7 +121,7 @@ TODO List
 - [ ] Working with pagination and test
 - [x] Working with custom errors
 - [ ] More tests
-- [ ] Working with CheckPathVariables in many libs
+- [ ] Working with CheckPathVariables in Standard library
 
 Installation
 ============

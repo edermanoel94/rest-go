@@ -10,6 +10,7 @@ import (
 
 // CheckPathVariables see if any pathVariables match on params, if dont, add to a slice.
 // Actually this works just on mux.Vars()
+// Can use safelly!
 func CheckPathVariables(params map[string]string, pathVariables ...string) error {
 
 	fields := make([]string, 0)
