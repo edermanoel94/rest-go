@@ -128,7 +128,7 @@ Installation
 
 To install, use `go get`:
 
-    go get github.com/edermanoel94/rest-go
+go get github.com/edermanoel94/rest-go
 
 
 Example
@@ -137,19 +137,19 @@ Example
 To build, use `go build`:
 
 ```
-    cd examples
+cd examples
 ```
 
 And use dep for install packages:
 
 ```
-    dep ensure
+dep ensure
 ```
 
 Then, to run:
 
 ```
-    go run *.go
+go run *.go
 ```
 
 Contributing
