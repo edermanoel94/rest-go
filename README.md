@@ -128,8 +128,9 @@ Installation
 
 To install, use `go get`:
 
+```
 go get github.com/edermanoel94/rest-go
-
+```
 
 Example
 =======
