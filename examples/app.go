@@ -12,7 +12,7 @@ import (
 	"net/http"
 )
 
-type Product struct {
+type product struct {
 	ID          string  `json:"id"`
 	Name        string  `json:"name"`
 	Description string  `json:"description"`
@@ -20,7 +20,7 @@ type Product struct {
 	Price       float64 `json:"price"`
 }
 
-type Handler struct {
+type handler struct {
 	db *scribble.Driver
 }
 
@@ -32,23 +32,23 @@ func main() {
 
 	db, _ := scribble.New("./db", &scribble.Options{})
 
-	handler := Handler{db: db}
+	handler := handler{db: db}
 
 	router := mux.NewRouter()
 
-	router.HandleFunc("/", handler.SaveHandler).Methods(http.MethodPost)
-	router.HandleFunc("/", handler.ListHandler).Methods(http.MethodGet)
-	router.HandleFunc("/{resource}", handler.OneHandler).Methods(http.MethodGet)
-	router.HandleFunc("/{resource}", handler.DeleteHandler).Methods(http.MethodDelete)
-	router.HandleFunc("/{resource}", handler.UpdateHandler).Methods(http.MethodPut)
+	router.HandleFunc("/", handler.saveHandler).Methods(http.MethodPost)
+	router.HandleFunc("/", handler.listHandler).Methods(http.MethodGet)
+	router.HandleFunc("/{resource}", handler.detailHandler).Methods(http.MethodGet)
+	router.HandleFunc("/{resource}", handler.deleteHandler).Methods(http.MethodDelete)
+	router.HandleFunc("/{resource}", handler.updateHandler).Methods(http.MethodPut)
 
 	log.Fatal(http.ListenAndServe("0.0.0.0:80", cors.AllowAll().Handler(router)))
 }
 
 //
-func (h *Handler) SaveHandler(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) saveHandler(w http.ResponseWriter, r *http.Request) {
 
-	product := Product{}
+	product := product{}
 
 	err := rest.GetBody(r.Body, &product)
 
@@ -71,13 +71,13 @@ func (h *Handler) SaveHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 //
-func (h *Handler) ListHandler(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) listHandler(w http.ResponseWriter, r *http.Request) {
 
 	records, _ := h.db.ReadAll(collection)
-	products := make([]Product, 0)
+	products := make([]product, 0)
 
 	for _, record := range records {
-		product := Product{}
+		product := product{}
 		json.Unmarshal([]byte(record), &product)
 		products = append(products, product)
 	}
@@ -86,7 +86,7 @@ func (h *Handler) ListHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 //
-func (h *Handler) OneHandler(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) detailHandler(w http.ResponseWriter, r *http.Request) {
 
 	params := mux.Vars(r)
 
@@ -97,7 +97,7 @@ func (h *Handler) OneHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	product := Product{}
+	product := product{}
 
 	err = h.db.Read(collection, params["resource"], &product)
 
@@ -110,7 +110,7 @@ func (h *Handler) OneHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 //
-func (h *Handler) DeleteHandler(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) deleteHandler(w http.ResponseWriter, r *http.Request) {
 
 	params := mux.Vars(r)
 
@@ -132,6 +132,6 @@ func (h *Handler) DeleteHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 //
-func (h *Handler) UpdateHandler(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) updateHandler(w http.ResponseWriter, r *http.Request) {
 	rest.Error(w, errors.New("not implemented"), http.StatusNotImplemented)
 }
