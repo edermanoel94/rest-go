@@ -48,7 +48,6 @@ See it in action:
 package yours
 
 import (
-    "encoding/json"
     "github.com/edermanoel94/rest-go"
     "net/http"
 )
@@ -59,10 +58,7 @@ type product struct {
 }
 
 func SomeHandler(w http.ResponseWriter, r *http.Request) {
-	
-    product := &product{"Smart TV", 50.00}
-    // rest.Marshalled marshall the struct and respond json.
-    rest.Marshalled(w, product, http.StatusOK)
+    rest.Marshalled(w, &product{"Smart TV", 50.00}, http.StatusOK)
 }
 ```
 
@@ -72,7 +68,6 @@ A payload send to your API and desarialize to a struct, to easy!
 package yours
 
 import (
-    "encoding/json"
     "github.com/edermanoel94/rest-go"
     "net/http"
 )
@@ -90,8 +85,7 @@ func SomePostHandler(w http.ResponseWriter, r *http.Request) {
     if err != nil {
         // do stuff with error
     }
-
-    // Save/Update Whatever ur want to do
+    // Do stuff...
 }    
 ```
 
@@ -101,8 +95,8 @@ Working with [`mux`](https://github.com/gorilla/mux "API documentation") package
 package yours
 
 import (
-    "encoding/json"
     "github.com/edermanoel94/rest-go"
+    "github.com/gorilla/mux"
     "net/http"
 )
 

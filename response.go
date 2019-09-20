@@ -8,14 +8,17 @@ import (
 )
 
 var (
+	// ErrIsNil is when send a nil error
 	ErrIsNil = errors.New("error cannot be nil")
 )
 
+// Content send slice of bytes to respond json
 func Content(w http.ResponseWriter, body []byte, code int) (int, error) {
 	w.Header().Add(contentType, applicationJson)
 	return response(w, body, code)
 }
 
+// Marshalled use pointer to marshall and respond json
 func Marshalled(w http.ResponseWriter, v interface{}, code int) (int, error) {
 	bytes, err := json.Marshal(v)
 	if err != nil {
@@ -24,6 +27,8 @@ func Marshalled(w http.ResponseWriter, v interface{}, code int) (int, error) {
 	return Content(w, bytes, code)
 }
 
+// Error send a error to respond json, can send a non-struct which implements error
+// and stringify.
 func Error(w http.ResponseWriter, err error, code int) (int, error) {
 
 	if err == nil {
