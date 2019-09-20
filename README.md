@@ -131,6 +131,27 @@ To install, use `go get`:
     go get github.com/edermanoel94/rest-go
 
 
+Example
+=======
+
+To build, use `go build`:
+
+```
+    cd examples
+```
+
+And use dep for install packages:
+
+```
+    dep ensure
+```
+
+Then, to run:
+
+```
+    go run *.go
+```
+
 Contributing
 ============
 
