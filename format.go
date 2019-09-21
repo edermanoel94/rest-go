@@ -1,8 +1,12 @@
 package rest
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // defaultErrorMessage encapsulate an error in a json format
 func defaultErrorMessage(err error) []byte {
-	return []byte(fmt.Sprintf(`{"message":"%s"}`, err.Error()))
+	sanitize := strings.ReplaceAll(err.Error(), "\"", "")
+	return []byte(fmt.Sprintf(`{"message":"%s"}`, sanitize))
 }

@@ -135,7 +135,7 @@ go get github.com/edermanoel94/rest-go
 Example
 =======
 
-To build, use `go build`:
+To install and build:
 
 ```
 cd examples
@@ -150,7 +150,7 @@ dep ensure
 Then, to run:
 
 ```
-go run *.go
+go run *.go || go build
 ```
 
 Contributing

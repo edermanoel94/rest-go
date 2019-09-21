@@ -43,18 +43,20 @@ func TestContent(t *testing.T) {
 
 		defer result.Body.Close()
 
-		bytesReceived, err := ioutil.ReadAll(result.Body)
+		payloadReceived, err := ioutil.ReadAll(result.Body)
 
 		if err != nil {
 			t.Fatalf("cannot read recorder: %v", err)
 		}
 
-		assert.Equal(t, len(payloadSend), len(bytesReceived))
+		assert.True(t, json.Valid(payloadReceived))
+
+		assert.Equal(t, len(payloadSend), len(payloadReceived))
 		assert.Equal(t, statusCode, result.StatusCode)
 		assert.Equal(t, "application/json", result.Header.Get("Content-Type"))
 	})
 
-	t.Run("should send a nil in message and send statusCode", func(t *testing.T) {
+	t.Run("should send a nil in body of content", func(t *testing.T) {
 
 		recorder := httptest.NewRecorder()
 
@@ -67,13 +69,16 @@ func TestContent(t *testing.T) {
 
 		defer result.Body.Close()
 
-		bytesReceived, err := ioutil.ReadAll(result.Body)
+		payloadReceived, err := ioutil.ReadAll(result.Body)
 
 		if err != nil {
 			t.Fatalf("cannot read recorder: %v", err)
 		}
 
-		assert.Equal(t, len(payloadSend), len(bytesReceived))
+		// empty body its no a valid json
+		assert.False(t, json.Valid(payloadReceived))
+
+		assert.Equal(t, len(payloadSend), len(payloadReceived))
 		assert.Equal(t, statusCode, result.StatusCode)
 		assert.Equal(t, "application/json", result.Header.Get("Content-Type"))
 	})
@@ -100,7 +105,10 @@ func TestError(t *testing.T) {
 			t.Fatalf("cannot read recorder: %v", err)
 		}
 
+		assert.True(t, json.Valid(payloadReceived))
+
 		assert.Contains(t, string(payloadReceived), "not found")
+
 		assert.Equal(t, statusCode, result.StatusCode)
 	})
 
@@ -123,7 +131,10 @@ func TestError(t *testing.T) {
 			t.Fatalf("cannot read recorder: %v", err)
 		}
 
+		assert.True(t, json.Valid(payloadReceived))
+
 		assert.Contains(t, string(payloadReceived), rest.ErrIsNil.Error())
+
 		assert.Equal(t, http.StatusInternalServerError, result.StatusCode)
 	})
 
@@ -150,6 +161,8 @@ func TestError(t *testing.T) {
 			t.Fatalf("cannot read recorder: %v", err)
 		}
 
+		assert.True(t, json.Valid(payloadReceived))
+
 		assert.Contains(t, customError.Error(), string(payloadReceived))
 	})
 
@@ -175,7 +188,33 @@ func TestError(t *testing.T) {
 			t.Fatalf("cannot read recorder: %v", err)
 		}
 
+		assert.True(t, json.Valid(payloadReceived))
+
 		assert.Exactly(t, customError.Error(), string(payloadReceived))
+	})
+
+	t.Run("should not valid json if send a extra quotes on error message", func(t *testing.T) {
+
+		errorThrowed := errors.New("\"not found'")
+		statusCode := http.StatusNotFound
+
+		recorder := httptest.NewRecorder()
+
+		_, _ = rest.Error(recorder, errorThrowed, statusCode)
+
+		result := recorder.Result()
+
+		defer result.Body.Close()
+
+		payloadReceived, err := ioutil.ReadAll(result.Body)
+
+		if err != nil {
+			t.Fatalf("cannot read recorder: %v", err)
+		}
+
+		assert.True(t, json.Valid(payloadReceived))
+
+		assert.Contains(t, string(payloadReceived), "not found")
 	})
 
 	// TODO: add more tests with custom error on pointer
@@ -206,13 +245,15 @@ func TestMarshalled(t *testing.T) {
 
 			defer result.Body.Close()
 
-			body, err := ioutil.ReadAll(result.Body)
+			payloadReceived, err := ioutil.ReadAll(result.Body)
 
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			assert.Contains(t, string(body), tc.contains)
+			assert.True(t, json.Valid(payloadReceived))
+
+			assert.Contains(t, string(payloadReceived), tc.contains)
 		})
 
 	}
