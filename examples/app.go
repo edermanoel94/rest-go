@@ -46,7 +46,7 @@ func main() {
 }
 
 //
-func (h *Handler) saveHandler(w http.ResponseWriter, r *http.Request) {
+func (h *handler) saveHandler(w http.ResponseWriter, r *http.Request) {
 
 	product := product{}
 
@@ -71,7 +71,7 @@ func (h *Handler) saveHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 //
-func (h *Handler) listHandler(w http.ResponseWriter, r *http.Request) {
+func (h *handler) listHandler(w http.ResponseWriter, r *http.Request) {
 
 	records, _ := h.db.ReadAll(collection)
 	products := make([]product, 0)
@@ -86,7 +86,7 @@ func (h *Handler) listHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 //
-func (h *Handler) detailHandler(w http.ResponseWriter, r *http.Request) {
+func (h *handler) detailHandler(w http.ResponseWriter, r *http.Request) {
 
 	params := mux.Vars(r)
 
@@ -110,7 +110,7 @@ func (h *Handler) detailHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 //
-func (h *Handler) deleteHandler(w http.ResponseWriter, r *http.Request) {
+func (h *handler) deleteHandler(w http.ResponseWriter, r *http.Request) {
 
 	params := mux.Vars(r)
 
@@ -132,6 +132,6 @@ func (h *Handler) deleteHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 //
-func (h *Handler) updateHandler(w http.ResponseWriter, r *http.Request) {
+func (h *handler) updateHandler(w http.ResponseWriter, r *http.Request) {
 	rest.Error(w, errors.New("not implemented"), http.StatusNotImplemented)
 }
