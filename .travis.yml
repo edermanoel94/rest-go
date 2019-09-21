@@ -1,12 +1,5 @@
 language: go
 
-notifications:
-  email:
-    recipients:
-      - edercosta94@live.com
-    on_success: never
-    on_failure: always
-
 go:
   - 1.12.x
 
