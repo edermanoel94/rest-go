@@ -15,18 +15,23 @@ type customError struct {
 	Description string `json:"description"`
 	Code        string `json:"code"`
 }
-
-func (c customError) Error() string {
-	bytes, _ := json.Marshal(&c)
-	return string(bytes)
-}
-
+type sliceError []int
 type mapError map[string]interface{}
 
 func (m mapError) Error() string {
 	bytes, _ := json.Marshal(&m)
 	return string(bytes)
 }
+func (c customError) Error() string {
+	bytes, _ := json.Marshal(&c)
+	return string(bytes)
+}
+func (s sliceError) Error() string {
+	bytes, _ := json.Marshal(&s)
+	return string(bytes)
+}
+
+// TESTS
 
 func TestContent(t *testing.T) {
 
@@ -171,6 +176,35 @@ func TestError(t *testing.T) {
 		customError := make(mapError)
 
 		customError["message"] = "error"
+
+		statusCode := http.StatusNotFound
+
+		recorder := httptest.NewRecorder()
+
+		rest.Error(recorder, customError, statusCode)
+
+		result := recorder.Result()
+
+		defer result.Body.Close()
+
+		payloadReceived, err := ioutil.ReadAll(result.Body)
+
+		if err != nil {
+			t.Fatalf("cannot read recorder: %v", err)
+		}
+
+		assert.True(t, json.Valid(payloadReceived))
+
+		assert.Exactly(t, customError.Error(), string(payloadReceived))
+	})
+
+	t.Run("should send a custom slice error message which implements error interface", func(t *testing.T) {
+
+		customError := make(sliceError, 0)
+
+		customError = append(customError, 1)
+		customError = append(customError, 2)
+		customError = append(customError, 3)
 
 		statusCode := http.StatusNotFound
 
