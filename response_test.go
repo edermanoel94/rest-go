@@ -35,58 +35,41 @@ func (s sliceError) Error() string {
 
 func TestContent(t *testing.T) {
 
-	t.Run("should serialize message in bytes and send statusCode", func(t *testing.T) {
+	testCases := []struct {
+		description string
+		payload     []byte
+		statusCode  int
+		isValidJson bool
+	}{
+		{"should serialize message in bytes and send statusCode",
+			[]byte("{\"name\": \"cale\"}"), http.StatusOK, true},
+		{"should send a nil in body of content", nil, http.StatusOK, false},
+	}
 
-		payloadSend := []byte("{\"name\": \"cale\"}")
-		statusCode := http.StatusOK
+	for _, tc := range testCases {
 
-		recorder := httptest.NewRecorder()
+		t.Run(tc.description, func(t *testing.T) {
 
-		rest.Content(recorder, payloadSend, statusCode)
+			recorder := httptest.NewRecorder()
 
-		result := recorder.Result()
+			rest.Content(recorder, tc.payload, tc.statusCode)
 
-		defer result.Body.Close()
+			result := recorder.Result()
 
-		payloadReceived, err := ioutil.ReadAll(result.Body)
+			defer result.Body.Close()
 
-		if err != nil {
-			t.Fatalf("cannot read recorder: %v", err)
-		}
+			payloadReceived, err := ioutil.ReadAll(result.Body)
 
-		assert.True(t, json.Valid(payloadReceived))
+			if err != nil {
+				t.Fatalf("cannot read recorder: %v", err)
+			}
 
-		assert.Equal(t, len(payloadSend), len(payloadReceived))
-		assert.Equal(t, statusCode, result.StatusCode)
-		assert.Equal(t, "application/json", result.Header.Get("Content-Type"))
-	})
-
-	t.Run("should send a nil in body of content", func(t *testing.T) {
-
-		recorder := httptest.NewRecorder()
-
-		var payloadSend []byte
-		statusCode := http.StatusOK
-
-		rest.Content(recorder, nil, statusCode)
-
-		result := recorder.Result()
-
-		defer result.Body.Close()
-
-		payloadReceived, err := ioutil.ReadAll(result.Body)
-
-		if err != nil {
-			t.Fatalf("cannot read recorder: %v", err)
-		}
-
-		// empty body its no a valid json
-		assert.False(t, json.Valid(payloadReceived))
-
-		assert.Equal(t, len(payloadSend), len(payloadReceived))
-		assert.Equal(t, statusCode, result.StatusCode)
-		assert.Equal(t, "application/json", result.Header.Get("Content-Type"))
-	})
+			assert.Equal(t, tc.isValidJson, json.Valid(payloadReceived))
+			assert.Equal(t, len(tc.payload), len(payloadReceived))
+			assert.Equal(t, tc.statusCode, result.StatusCode)
+			assert.Equal(t, "application/json", result.Header.Get("Content-Type"))
+		})
+	}
 }
 
 func TestError(t *testing.T) {
@@ -269,6 +252,7 @@ func TestMarshalled(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
+
 		t.Run(tc.description, func(t *testing.T) {
 
 			recorder := httptest.NewRecorder()
@@ -289,6 +273,5 @@ func TestMarshalled(t *testing.T) {
 
 			assert.Contains(t, string(payloadReceived), tc.contains)
 		})
-
 	}
 }
