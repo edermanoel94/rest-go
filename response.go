@@ -31,10 +31,6 @@ func Marshalled(w http.ResponseWriter, v interface{}, code int) (int, error) {
 // and stringify.
 func Error(w http.ResponseWriter, err error, code int) (int, error) {
 
-	if err == nil {
-		return Content(w, defaultErrorMessage(ErrIsNil), http.StatusInternalServerError)
-	}
-
 	var bytes []byte
 
 	switch typeOf := reflect.TypeOf(err); typeOf.Kind() {

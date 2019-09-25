@@ -3,6 +3,7 @@ package rest_test
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/edermanoel94/rest-go"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
@@ -43,6 +44,7 @@ func TestContent(t *testing.T) {
 	}{
 		{"should serialize message in bytes and send statusCode",
 			[]byte("{\"name\": \"cale\"}"), http.StatusOK, true},
+		{"should not valid a json", []byte("{\"}"), http.StatusBadRequest, false},
 		{"should send a nil in body of content", nil, http.StatusOK, false},
 	}
 
@@ -74,165 +76,44 @@ func TestContent(t *testing.T) {
 
 func TestError(t *testing.T) {
 
-	t.Run("should send a message of error with a status code", func(t *testing.T) {
-
-		errorThrowed := errors.New("not found")
-		statusCode := http.StatusNotFound
-
-		recorder := httptest.NewRecorder()
-
-		_, _ = rest.Error(recorder, errorThrowed, statusCode)
-
-		result := recorder.Result()
-
-		defer result.Body.Close()
-
-		payloadReceived, err := ioutil.ReadAll(result.Body)
-
-		if err != nil {
-			t.Fatalf("cannot read recorder: %v", err)
-		}
-
-		assert.True(t, json.Valid(payloadReceived))
-
-		assert.Contains(t, string(payloadReceived), "not found")
-
-		assert.Equal(t, statusCode, result.StatusCode)
-	})
-
-	t.Run("should send a nil error and given a `ErrIsNil`", func(t *testing.T) {
-
-		var errorThrowed error
-		statusCode := http.StatusNotFound
-
-		recorder := httptest.NewRecorder()
-
-		rest.Error(recorder, errorThrowed, statusCode)
-
-		result := recorder.Result()
-
-		defer result.Body.Close()
-
-		payloadReceived, err := ioutil.ReadAll(result.Body)
-
-		if err != nil {
-			t.Fatalf("cannot read recorder: %v", err)
-		}
-
-		assert.True(t, json.Valid(payloadReceived))
-
-		assert.Contains(t, string(payloadReceived), rest.ErrIsNil.Error())
-
-		assert.Equal(t, http.StatusInternalServerError, result.StatusCode)
-	})
-
-	t.Run("should send a custom struct error message which implements error interface", func(t *testing.T) {
-
-		customError := customError{
+	testCases := []struct {
+		description string
+		err         error
+		isValidJson bool
+	}{
+		{"should send a message of error with a status code", errors.New("not found"), true},
+		{"should ignore extra quotes and valid json", errors.New("\"not found'"), true},
+		{"should send a custom struct error message which implements error interface", customError{
 			Description: "cannot found",
 			Code:        "001",
-		}
+		}, true},
+		{"should send a custom map error message which implements error interface", mapError{"message": "error"}, true},
+		{"should send a custom slice error message which implements error interface", sliceError{1, 2, 3}, true},
+	}
 
-		statusCode := http.StatusNotFound
+	for _, tc := range testCases {
 
-		recorder := httptest.NewRecorder()
+		t.Run(tc.description, func(t *testing.T) {
 
-		rest.Error(recorder, customError, statusCode)
+			recorder := httptest.NewRecorder()
 
-		result := recorder.Result()
+			rest.Error(recorder, tc.err, http.StatusNotFound)
 
-		defer result.Body.Close()
+			result := recorder.Result()
 
-		payloadReceived, err := ioutil.ReadAll(result.Body)
+			defer result.Body.Close()
 
-		if err != nil {
-			t.Fatalf("cannot read recorder: %v", err)
-		}
+			payloadReceived, err := ioutil.ReadAll(result.Body)
 
-		assert.True(t, json.Valid(payloadReceived))
+			if err != nil {
+				t.Fatalf("cannot read recorder: %v", err)
+			}
 
-		assert.Contains(t, customError.Error(), string(payloadReceived))
-	})
-
-	t.Run("should send a custom map error message which implements error interface", func(t *testing.T) {
-
-		customError := make(mapError)
-
-		customError["message"] = "error"
-
-		statusCode := http.StatusNotFound
-
-		recorder := httptest.NewRecorder()
-
-		rest.Error(recorder, customError, statusCode)
-
-		result := recorder.Result()
-
-		defer result.Body.Close()
-
-		payloadReceived, err := ioutil.ReadAll(result.Body)
-
-		if err != nil {
-			t.Fatalf("cannot read recorder: %v", err)
-		}
-
-		assert.True(t, json.Valid(payloadReceived))
-
-		assert.Exactly(t, customError.Error(), string(payloadReceived))
-	})
-
-	t.Run("should send a custom slice error message which implements error interface", func(t *testing.T) {
-
-		customError := make(sliceError, 0)
-
-		customError = append(customError, 1)
-		customError = append(customError, 2)
-		customError = append(customError, 3)
-
-		statusCode := http.StatusNotFound
-
-		recorder := httptest.NewRecorder()
-
-		rest.Error(recorder, customError, statusCode)
-
-		result := recorder.Result()
-
-		defer result.Body.Close()
-
-		payloadReceived, err := ioutil.ReadAll(result.Body)
-
-		if err != nil {
-			t.Fatalf("cannot read recorder: %v", err)
-		}
-
-		assert.True(t, json.Valid(payloadReceived))
-
-		assert.Exactly(t, customError.Error(), string(payloadReceived))
-	})
-
-	t.Run("should not valid json if send a extra quotes on error message", func(t *testing.T) {
-
-		errorThrowed := errors.New("\"not found'")
-		statusCode := http.StatusNotFound
-
-		recorder := httptest.NewRecorder()
-
-		_, _ = rest.Error(recorder, errorThrowed, statusCode)
-
-		result := recorder.Result()
-
-		defer result.Body.Close()
-
-		payloadReceived, err := ioutil.ReadAll(result.Body)
-
-		if err != nil {
-			t.Fatalf("cannot read recorder: %v", err)
-		}
-
-		assert.True(t, json.Valid(payloadReceived))
-
-		assert.Contains(t, string(payloadReceived), "not found")
-	})
+			assert.Equal(t, tc.isValidJson, json.Valid(payloadReceived))
+			fmt.Println(tc.err.Error())
+			assert.Contains(t, string(payloadReceived), tc.err.Error())
+		})
+	}
 
 	// TODO: add more tests with custom error on pointer
 }
