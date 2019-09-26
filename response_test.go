@@ -3,7 +3,6 @@ package rest_test
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"github.com/edermanoel94/rest-go"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
@@ -110,7 +109,7 @@ func TestError(t *testing.T) {
 			}
 
 			assert.Equal(t, tc.isValidJson, json.Valid(payloadReceived))
-			fmt.Println(tc.err.Error())
+
 			assert.Contains(t, string(payloadReceived), tc.err.Error())
 		})
 	}
