@@ -153,7 +153,7 @@ dep ensure
 Then, to run:
 
 ```
-go run *.go || go build
+go build
 ```
 
 Contributing
