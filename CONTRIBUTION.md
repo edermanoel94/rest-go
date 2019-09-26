@@ -35,4 +35,4 @@ Pull requests must do the following in order to be merged.
 
 - Match the style of code already existing in the project.
 - Must not contain any merge conflicts (Pull and merge master before submitting the pull request).
-- Include tests for the modifications in your commit.
+- Include tests for the modifications in your commit. (Make sure your test is running before send)
