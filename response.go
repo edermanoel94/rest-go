@@ -8,8 +8,7 @@ import (
 )
 
 var (
-	// ErrIsNil is when send a nil error
-	ErrIsNil = errors.New("error cannot be nil")
+	ErrNotValidJson = errors.New("not a valid json")
 )
 
 // Content send slice of bytes to respond json
@@ -27,8 +26,7 @@ func Marshalled(w http.ResponseWriter, v interface{}, code int) (int, error) {
 	return Content(w, bytes, code)
 }
 
-// Error send a error to respond json, can send a non-struct which implements error
-// and stringify.
+// Error send a error to respond json, can send a non-struct which implements error.
 func Error(w http.ResponseWriter, err error, code int) (int, error) {
 
 	var bytes []byte
@@ -37,7 +35,11 @@ func Error(w http.ResponseWriter, err error, code int) (int, error) {
 	case reflect.Ptr:
 		bytes = defaultErrorMessage(err)
 	default:
-		return Content(w, []byte(err.Error()), http.StatusInternalServerError)
+		bytes := []byte(err.Error())
+		if !json.Valid(bytes) {
+			return Content(w, defaultErrorMessage(ErrNotValidJson), http.StatusInternalServerError)
+		}
+		return Content(w, bytes, http.StatusInternalServerError)
 	}
 
 	return Content(w, bytes, code)
