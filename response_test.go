@@ -40,7 +40,6 @@ func TestContent(t *testing.T) {
 	}{
 		{"should serialize message in bytes and send statusCode",
 			[]byte("{\"name\": \"cale\"}"), http.StatusOK},
-		{"should not valid a json", []byte("{\"}"), http.StatusBadRequest},
 		{"should send a nil in body of content", nil, http.StatusOK},
 	}
 
