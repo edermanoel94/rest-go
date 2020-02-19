@@ -48,7 +48,7 @@ func ExampleContent() {
 
 	recorder := httptest.NewRecorder()
 
-	rest.Content(recorder, bytes, http.StatusOK)
+	rest.Response(recorder, bytes, http.StatusOK)
 
 	result := recorder.Result()
 

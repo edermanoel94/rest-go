@@ -31,16 +31,17 @@ func (c customErrorWithoutJson) Error() string {
 
 // TESTS
 
-func TestContent(t *testing.T) {
+func TestResponse(t *testing.T) {
 
 	testCases := []struct {
 		description string
 		payload     []byte
 		statusCode  int
+		err         error
 	}{
-		{"should serialize message in bytes and send statusCode",
-			[]byte("{\"name\": \"cale\"}"), http.StatusOK},
-		{"should send a nil in body of content", nil, http.StatusOK},
+		{"should serialize message and send statusCode",
+			[]byte("{\"name\": \"cale\"}"), http.StatusOK, nil},
+		{"should send a nil and get an ErrNotValidJson", nil, http.StatusInternalServerError, rest.ErrNotValidJson},
 	}
 
 	for _, tc := range testCases {
@@ -49,7 +50,7 @@ func TestContent(t *testing.T) {
 
 			recorder := httptest.NewRecorder()
 
-			rest.Content(recorder, tc.payload, tc.statusCode)
+			rest.Response(recorder, tc.payload, tc.statusCode)
 
 			result := recorder.Result()
 
@@ -61,7 +62,13 @@ func TestContent(t *testing.T) {
 				t.Fatalf("cannot read recorder: %v", err)
 			}
 
-			assert.Equal(t, len(tc.payload), len(payloadReceived))
+			// TODO: is the better way to do this?
+			if tc.err != nil {
+				assert.Equal(t, string(payloadReceived), fmt.Sprintf(`{"message":"%s"}`, tc.err.Error()))
+			} else {
+				assert.Equal(t, len(tc.payload), len(payloadReceived))
+			}
+
 			assert.Equal(t, tc.statusCode, result.StatusCode)
 			assert.Equal(t, "application/json", result.Header.Get("Content-Type"))
 		})

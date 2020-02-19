@@ -121,10 +121,12 @@ func SomePostHandler(w http.ResponseWriter, r *http.Request) {
 TODO List
 =========
 
-- [ ] Working with pagination and test
 - [x] Working with custom errors
+- [ ] Add Response for ALB and API Gateway
+- [ ] Benchmarking (Memory, CPU)
+- [ ] Working with CheckPathVariables and GetPathVariable in Standard library
 - [ ] More tests
-- [ ] Working with CheckPathVariables in Standard library
+- [ ] Working with pagination
 
 Installation
 ============
@@ -144,10 +146,10 @@ To install and build:
 cd examples
 ```
 
-And use dep for install packages:
+And use gomod for install packages:
 
 ```
-dep ensure
+go mod tidy && go mod vendor
 ```
 
 Then, to run:

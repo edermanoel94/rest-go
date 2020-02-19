@@ -10,7 +10,7 @@ import (
 
 // CheckPathVariables see if any pathVariables match on params, if dont, add to a slice.
 // Actually this works just on mux.Vars()
-// Can use safelly!
+// TODO: make working in standard library
 func CheckPathVariables(params map[string]string, pathVariables ...string) error {
 
 	fields := make([]string, 0)
@@ -28,6 +28,15 @@ func CheckPathVariables(params map[string]string, pathVariables ...string) error
 	return nil
 }
 
+// GetPathVariable
+func GetPathVariable(key string, params map[string]string) string {
+	if param, ok := params[key]; !ok {
+		return ""
+	} else {
+		return param
+	}
+}
+
 // GetBody get the content of body on request and unmarshal a pointer to a <T> to attach on body
 func GetBody(reader io.ReadCloser, result interface{}) error {
 
@@ -39,6 +48,7 @@ func GetBody(reader io.ReadCloser, result interface{}) error {
 		return fmt.Errorf("couldn't read body of request: %v", err)
 	}
 
+	// TODO can do better performance
 	err = json.Unmarshal(bytes, result)
 
 	if err != nil {

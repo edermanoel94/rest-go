@@ -99,3 +99,26 @@ func TestGetBody(t *testing.T) {
 		assert.Contains(t, err.Error(), "couldn't unmarshal")
 	})
 }
+
+func TestGetPathVariable(t *testing.T) {
+
+	t.Run("should match a key and return value", func(t *testing.T) {
+
+		params := map[string]string{
+			"key": "value",
+		}
+
+		eder := rest.GetPathVariable("key", params)
+
+		assert.Equal(t, eder, "value")
+	})
+
+	t.Run("should not match a key and return a empty string", func(t *testing.T) {
+
+		params := make(map[string]string)
+
+		key := rest.GetPathVariable("aefafae", params)
+
+		assert.Equal(t, key, "")
+	})
+}

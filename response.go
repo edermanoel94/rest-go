@@ -11,9 +11,11 @@ var (
 	ErrNotValidJson = errors.New("not a valid json")
 )
 
-// Content send slice of bytes to respond json
-func Content(w http.ResponseWriter, body []byte, code int) (int, error) {
-	w.Header().Add(contentType, applicationJson)
+// Response send slice of bytes to respond json
+func Response(w http.ResponseWriter, body []byte, code int) (int, error) {
+	if !json.Valid(body) {
+		return response(w, defaultJsonErrorMessage(ErrNotValidJson), http.StatusInternalServerError)
+	}
 	return response(w, body, code)
 }
 
@@ -21,31 +23,29 @@ func Content(w http.ResponseWriter, body []byte, code int) (int, error) {
 func Marshalled(w http.ResponseWriter, v interface{}, code int) (int, error) {
 	bytes, err := json.Marshal(v)
 	if err != nil {
-		return Error(w, err, http.StatusBadRequest)
+		return Error(w, err, http.StatusInternalServerError)
 	}
-	return Content(w, bytes, code)
+	return Response(w, bytes, code)
 }
 
 // Error send a error to respond json, can send a non-struct which implements error.
 func Error(w http.ResponseWriter, err error, code int) (int, error) {
 
-	var bytes []byte
+	var errBytes []byte
 
 	switch typeOf := reflect.TypeOf(err); typeOf.Kind() {
 	case reflect.Ptr:
-		bytes = defaultErrorMessage(err)
+		errBytes = defaultJsonErrorMessage(err)
 	default:
-		bytes := []byte(err.Error())
-		if !json.Valid(bytes) {
-			return Content(w, defaultErrorMessage(ErrNotValidJson), http.StatusInternalServerError)
-		}
-		return Content(w, bytes, http.StatusInternalServerError)
+		errBytes = []byte(err.Error())
+		return Response(w, errBytes, http.StatusInternalServerError)
 	}
 
-	return Content(w, bytes, code)
+	return Response(w, errBytes, code)
 }
 
 func response(w http.ResponseWriter, body []byte, code int) (int, error) {
+	w.Header().Set(contentType, applicationJson)
 	w.WriteHeader(code)
 	return w.Write(body)
 }
