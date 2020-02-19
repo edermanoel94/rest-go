@@ -9,7 +9,7 @@ env:
 install: true
 
 script:
-  - go test -v -mod=vendor -race -coverprofile=coverage.txt -covermode=atomic
+  - go test -v -race -coverprofile=coverage.txt -covermode=atomic
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
