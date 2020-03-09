@@ -23,7 +23,7 @@ func SomeHandler(w http.ResponseWriter, r *http.Request) {
     if err != nil {
     	w.WriteHeader(http.StatusInternalServerError)
         // this is super bad!
-        message := fmt.Sprintf("{\"message\": \"%s\"}", err.Error())
+        message := fmt.Sprintf(`{"message": "%s"}`, err.Error())
     	w.Write([]byte(message))
         return
     }
@@ -131,10 +131,10 @@ TODO List
 Installation
 ============
 
-To install, use `go get`:
+To install, use `go get` using go modules:
 
 ```
-go get github.com/edermanoel94/rest-go
+go get github.com/edermanoel94/rest-go@latest
 ```
 
 Example
@@ -146,10 +146,10 @@ To install and build:
 cd examples
 ```
 
-And use gomod for install packages:
+And use go modules for install packages:
 
 ```
-go mod tidy && go mod vendor
+go mod tidy 
 ```
 
 Then, to run:
