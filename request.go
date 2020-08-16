@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"strings"
 )
 
@@ -37,22 +36,17 @@ func GetPathVariable(key string, params map[string]string) string {
 	}
 }
 
-// GetBody get the content of body on request and unmarshal a pointer to a <T> to attach on body
+// GetBody get the content of body on request and decode a pointer to a <T> to attach on body
 func GetBody(reader io.ReadCloser, result interface{}) error {
+	return decodeReader(reader, result)
+}
 
-	bytes, err := ioutil.ReadAll(reader)
+func decodeReader(reader io.ReadCloser, result interface{}) error {
 
 	defer reader.Close()
 
-	if err != nil {
-		return fmt.Errorf("couldn't read body of request: %v", err)
-	}
-
-	// TODO can do better performance
-	err = json.Unmarshal(bytes, result)
-
-	if err != nil {
-		return fmt.Errorf("couldn't unmarshal: %v", err)
+	if err := json.NewDecoder(reader).Decode(result); err != nil {
+		return fmt.Errorf("couldn't decode: %v", err)
 	}
 
 	return nil

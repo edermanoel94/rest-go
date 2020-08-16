@@ -48,7 +48,7 @@ func TestCheckPathVariables(t *testing.T) {
 
 func TestGetBody(t *testing.T) {
 
-	t.Run("should get a body on reader and marshal", func(t *testing.T) {
+	t.Run("should get a body on reader and decode", func(t *testing.T) {
 
 		result := struct {
 			Name string `json:"name"`
@@ -65,7 +65,7 @@ func TestGetBody(t *testing.T) {
 		assert.Equal(t, "eder", result.Name, fmt.Sprintf("expected: %s, got: %s", "eder", result.Name))
 	})
 
-	t.Run("should not unmarshal if send a nil on result", func(t *testing.T) {
+	t.Run("should not decode if send a nil on result", func(t *testing.T) {
 
 		reader := strings.NewReader("{\"name\": \"eder\"}")
 
@@ -77,10 +77,10 @@ func TestGetBody(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		assert.Contains(t, err.Error(), "couldn't unmarshal")
+		assert.Contains(t, err.Error(), "couldn't decode")
 	})
 
-	t.Run("should not unmarshal if send a Reader with empty string", func(t *testing.T) {
+	t.Run("should not decode if send a reader with empty data", func(t *testing.T) {
 
 		result := struct {
 			Name string `json:"name"`
@@ -96,7 +96,7 @@ func TestGetBody(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		assert.Contains(t, err.Error(), "couldn't unmarshal")
+		assert.Contains(t, err.Error(), "couldn't decode")
 	})
 }
 

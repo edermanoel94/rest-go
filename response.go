@@ -1,6 +1,7 @@
 package rest
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"net/http"
@@ -21,11 +22,11 @@ func Response(w http.ResponseWriter, body []byte, code int) (int, error) {
 
 // Marshalled use pointer to marshall and respond json
 func Marshalled(w http.ResponseWriter, v interface{}, code int) (int, error) {
-	bytes, err := json.Marshal(v)
-	if err != nil {
+	buf := &bytes.Buffer{}
+	if err := json.NewEncoder(buf).Encode(v); err != nil {
 		return Error(w, err, http.StatusInternalServerError)
 	}
-	return Response(w, bytes, code)
+	return Response(w, buf.Bytes(), code)
 }
 
 // Error send a error to respond json, can send a non-struct which implements error.
